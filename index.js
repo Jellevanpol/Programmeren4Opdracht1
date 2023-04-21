@@ -5,6 +5,33 @@ const logger = require('tracer').console()
 
 let userIdCounter = 0;
 
+//UC-202
+let database = {
+    users: [
+        {
+            id: 0,
+            firstname: 'Jelle',
+            lastname: 'van Pol',
+            email: 'Jellevanpol@ziggo.nl',
+            password: 'Password1!'
+        },
+        {
+            id: 1,
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'Johndoe@gmail.com',
+            password: 'Password1!'
+        },
+        {
+            id: 2,
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'Johndoe@gmail.com',
+            password: 'Password1!'
+        }
+    ]
+};
+let index = database.users.length;
 app.use(express.json())
 app.use('*', (req, res, next) => {
     const method = req.method
@@ -29,60 +56,78 @@ app.listen(port, () => {
 })
 
 //UC-201
-app.post('/api/register', (req, res) => {
-    const { firstName, lastName, email } = req.body;
-    if (!firstName || typeof (firstName) !== 'string' || firstName.trim().length === 0) {
-        res.status(400).send({ message: 'Invalid name provided' });
-        return;
-    }
-    if (!email || typeof (email) !== 'string' || !email.includes('@')) {
-        res.status(400).send({ message: 'Invalid email provided' });
-        return;
-    }
-    const id = ++userIdCounter;
-    const newUser = { id, firstName, lastName, email };
-    res.status(200).json({
-        status: 201,
-        message: 'User register endpoint',
-        data: {
-            newUser
+    app.post('/api/register', (req, res) => {
+        const user = req.body;
+    
+        // Check for missing fields
+        if (!user.firstName || !user.lastName || !user.email || !user.password) {
+            res.status(400).json({
+                status: 400,
+                message: 'All fields are required!',
+                data: {}
+            });
+            return;
         }
-    })
-});
+    
+        // Check for invalid email format
+        const emailRegex = /\S+@\S+\.\S+/;
+        if (!emailRegex.test(user.email)) {
+            res.status(400).json({
+                status: 400,
+                message: 'Invalid email format!',
+                data: {}
+            });
+            return;
+        }
+    
+        // Check for invalid password format
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(user.password)) {
+            res.status(400).json({
+                status: 400,
+                message: 'Invalid password format!',
+                data: {}
+            });
+            return;
+        }
+    
+        // // Check for existing user with the same email
+        // const existingUser = database.users.find(u => u.email === user.email);
+        // if (existingUser) {
+        //     res.status(403).json({
+        //         status: 403,
+        //         message: 'User already registered',
+        //         data: {}
+        //     });
+        //     return;
+        // }
+    
+        // Add the new user
+        user.id = index++;
+        database.users.push(user);
+    
+        res.status(201).json({
+            status: 201,
+            message: `User added with id ${user.id}`,
+            data: user
+        });
+    });
 
 //UC-202
-let database = {
-    users: [
-        {
-            id: 1,
-            firstname: 'Jelle',
-            lastname: 'van Pol',
-            email: 'Jellevanpol@ziggo.nl'
-        },
-        {
-            id: 2,
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'Johndoe@gmail.com'
-        }
-    ]
-};
-
 app.get('/api/user', (req, res) => {
     res.status(200).json({
         status: 200,
-        message: 'User info endpoint',
+        message: 'User lijst endpoint',
         data: database.users
     })
 });
 
-
 //UC-203
 app.get('/api/user/profile', (req, res) => {
-    const user = { id: 1, name: 'John Doe', email: 'john.doe@example.com' };
+    const user = { id: 1, firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com' };
     res.status(200).json({
         status: 200,
-        message: 'User info endpoint',
+        message: 'User profile endpoint',
         data: user
     })
 });
@@ -94,15 +139,15 @@ app.get('/api/user/:userId', (req, res) => {
     const user = database.users.find(user => user.id === userId)
     if (!user) {
         res.status(404).json({
-          status: 404,
-          message: 'User not found',    
-          data: user
+            status: 404,
+            message: 'User not found',
+            data: user
         });
         return;
-      }
+    }
     res.status(200).json({
         status: 200,
-        message: 'User info endpoint',
+        message: 'Requested user info endpoint',
         data: user
     })
 });
@@ -114,12 +159,12 @@ app.put('/api/user/:userId', (req, res) => {
     const user = database.users.find(user => user.id === userId);
 
     if (!user) {
-      res.status(404).json({
-        status: 404,
-        message: 'User not found',
-        data: {}
-      });
-      return;
+        res.status(404).json({
+            status: 404,
+            message: 'User not found',
+            data: {}
+        });
+        return;
     }
 
     const { firstName, lastName, email } = req.body;
@@ -130,14 +175,14 @@ app.put('/api/user/:userId', (req, res) => {
     user.email = email;
 
     res.status(200).json({
-      status: 200,
-      message: 'User updated successfully',
-      data: {
-        user
-      }
+        status: 200,
+        message: 'User updated successfully',
+        data: {
+            user
+        }
     });
 
-  });
+});
 
 //UC-206
 app.delete('/api/user/:userId', (req, res) => {
@@ -153,11 +198,10 @@ app.delete('/api/user/:userId', (req, res) => {
         return;
     }
 
-    const deletedUser = database.users.splice(userIndex, 1)[0];
-
     res.status(200).json({
         status: 200,
-        message: 'User deleted successfully',
+        message: 'User met ID ' + userId + ' deleted',
+        data: {}
     });
 
 });

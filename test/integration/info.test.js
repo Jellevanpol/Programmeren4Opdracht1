@@ -13,14 +13,15 @@ describe('Server-info', function () {
             .get('/api/info')
             .end((err, res) => {
                 res.body.should.be.an('object')
-                res.body.should.has.property('status').to.be.equal(201)
-                res.body.should.has.property('message')
-                res.body.should.has.property('data')
-                let { data, message } = res.body
+                let { data, message, status } = res.body
+                status.should.equal(201)
+                message.should.be.a('string').that.is.equal('Server info-endpoint')
                 data.should.be.an('object')
                 data.should.has.property('studentName').to.be.equal('Jelle')
                 data.should.has.property('studentNumber').to.be.equal(2203205)
+                data.should.has.property('description').to.be.equal('Welkom bij de server API van de share-a-meal')
                 done()
+
             });
     });
     it('TC-103 Server should return valid error on non-existent endpoint', (done) => {
