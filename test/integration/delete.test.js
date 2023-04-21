@@ -16,8 +16,8 @@ describe('Delete user by ID', function () {
                 assert(err === null);
                 let { data, message, status } = res.body;
 
-                expect(status).to.equal(200);
-                expect(message).to.equal('User met ID ' + userId + ' deleted')
+                status.should.equal(200);
+                message.should.equal('User met ID ' + userId + ' deleted')
 
                 done();
             });

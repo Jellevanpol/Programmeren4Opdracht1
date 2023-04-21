@@ -33,6 +33,7 @@ let database = {
 };
 let index = database.users.length;
 app.use(express.json())
+
 app.use('*', (req, res, next) => {
     const method = req.method
     logger.log(`Method ${method} is called with parameters ${JSON.stringify(req.params)} and body ${JSON.stringify(req.body)}`)
@@ -56,62 +57,62 @@ app.listen(port, () => {
 })
 
 //UC-201
-    app.post('/api/register', (req, res) => {
-        const user = req.body;
-    
-        // Check for missing fields
-        if (!user.firstName || !user.lastName || !user.email || !user.password) {
-            res.status(400).json({
-                status: 400,
-                message: 'All fields are required!',
-                data: {}
-            });
-            return;
-        }
-    
-        // Check for invalid email format
-        const emailRegex = /\S+@\S+\.\S+/;
-        if (!emailRegex.test(user.email)) {
-            res.status(400).json({
-                status: 400,
-                message: 'Invalid email format!',
-                data: {}
-            });
-            return;
-        }
-    
-        // Check for invalid password format
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordRegex.test(user.password)) {
-            res.status(400).json({
-                status: 400,
-                message: 'Invalid password format!',
-                data: {}
-            });
-            return;
-        }
-    
-        // // Check for existing user with the same email
-        // const existingUser = database.users.find(u => u.email === user.email);
-        // if (existingUser) {
-        //     res.status(403).json({
-        //         status: 403,
-        //         message: 'User already registered',
-        //         data: {}
-        //     });
-        //     return;
-        // }
-    
-        // Add the new user
-        user.id = index++;
-        database.users.push(user);
-    
-        res.status(201).json({
-            status: 201,
-            message: `User added with id ${user.id}`,
-            data: user
+app.post('/api/register', (req, res) => {
+    const user = req.body;
+
+    // Check for missing fields
+    if (!user.firstName || !user.lastName || !user.email || !user.password) {
+        res.status(400).json({
+            status: 400,
+            message: 'All fields are required!',
+            data: {}
         });
+        return;
+    }
+
+    // Check for invalid email format
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(user.email)) {
+        res.status(400).json({
+            status: 400,
+            message: 'Invalid email format!',
+            data: {}
+        });
+        return;
+    }
+
+    // Check for invalid password format
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(user.password)) {
+        res.status(400).json({
+            status: 400,
+            message: 'Invalid password format!',
+            data: {}
+        });
+        return;
+    }
+
+    // // Check for existing user with the same email
+    // const existingUser = database.users.find(u => u.email === user.email);
+    // if (existingUser) {
+    //     res.status(403).json({
+    //         status: 403,
+    //         message: 'User already registered',
+    //         data: {}
+    //     });
+    //     return;
+    // }
+
+    // Add the new user
+    user.id = index++;
+    database.users.push(user);
+
+    res.status(201).json({
+        status: 201,
+        message: `User added with id ${user.id}`,
+        data: user
     });
+});
 
 //UC-202
 app.get('/api/user', (req, res) => {

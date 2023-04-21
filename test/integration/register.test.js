@@ -70,61 +70,60 @@ describe('Register', function () {
     //         });
     // });
     
-    // it('TC-201-3- Server should return succes on user registered', (done) => {
-    //     // const newUser = {
-    //     //     firstName: 'John',
-    //     //     lastName: 'Doe',
-    //     //     email: 'Johndoe@example.com',
-    //     //     password: 'Password123!',
-    //     // };
+    it('TC-201-5- Server should return succes on user registered', (done) => {
+        // const newUser = {
+        //     firstName: 'John',
+        //     lastName: 'Doe',
+        //     email: 'Johndoe@example.com',
+        //     password: 'Password123!',
+        // };
 
-    //     // chai.request(server)
-    //     //     .post('/api/register')
-    //     //     .send(newUser)
-    //     //     .end((err, res) => {
-    //     //         assert(err === null)
+        // chai.request(server)
+        //     .post('/api/register')
+        //     .send(newUser)
+        //     .end((err, res) => {
+        //         assert(err === null)
                 
-    //     //         let { data, message, status } = res.body
-    //     //         expect(err).to.be.null;
-    //     //         expect(res).to.have.status(201);
-    //     //         expect(body.message).to.equal('User register-endpoint');
-    //     //         expect(data.newUser).to.have.property('id');
-    //     //         expect(data.newUser.firstName).to.equal(newUser.firstName);
-    //     //         expect(data.newUser.lastName).to.equal(newUser.lastName);
-    //     //         expect(data.newUser.email).to.equal(newUser.email);
-    //     //         expect(data.newUser.password).to.be.undefined;
-    //     //         done();
+        //         let { data, message, status } = res.body
+        //         expect(err).to.be.null;
+        //         expect(res).to.have.status(201);
+        //         expect(body.message).to.equal('User register-endpoint');
+        //         expect(data.newUser).to.have.property('id');
+        //         expect(data.newUser.firstName).to.equal(newUser.firstName);
+        //         expect(data.newUser.lastName).to.equal(newUser.lastName);
+        //         expect(data.newUser.email).to.equal(newUser.email);
+        //         expect(data.newUser.password).to.be.undefined;
+        //         done();
 
-    //     //     });
-    //     const newUser = {
-    //         firstName: 'Jelle',
-    //         lastName: 'van Pol',
-    //         emailAdress: 'Jellevanpol@ziggo.nl',
-    //         password: 'Password1!'
-    //       };
+        //     });
+        const newUser = {
+            firstName: 'Jelle',
+            lastName: 'van Pol',
+            email: 'Jellevanpol@ziggo.nl',
+            password: 'Password1!'
+          };
       
-    //       // Voer de test uit
-    //       chai
-    //         .request(server)
-    //         .post('/api/register')
-    //         .send(newUser)
-    //         .end((err, res) => {
-    //           assert(err === null)
+          // Voer de test uit
+          chai
+            .request(server)
+            .post('/api/register')
+            .send(newUser)
+            .end((err, res) => {
+              assert(err === null)
       
-    //           res.body.should.be.an('object')
-    //           let { data, message, status } = res.body
+              res.body.should.be.an('object')
+              let { data, message, status } = res.body
       
-    //           status.should.equal(201)
-    //           message.should.be.a('string').that.contains('toegevoegd')
-    //           data.should.be.an('object')
+              status.should.equal(201)
+              message.should.be.a('string').that.contains('User added with id ')
+              data.should.be.an('object')
       
-    //           data.should.include({ id: 2 })
-    //           data.should.not.include({ id: 0 })
-    //           data.id.should.equal(2)
-    //           data.firstName.should.equal('Jelle')
-    //           data.lastName.should.equal('van Pol')
+
+              data.should.have.property( 'id' )
+              data.firstName.should.equal('Jelle')
+              data.lastName.should.equal('van Pol')
       
-    //           done();
-    //         });
-    // });
+              done();
+            });
+    });
 })
