@@ -44,62 +44,30 @@ describe('Register', function () {
                 done();
             });
     });
-    // it('TC-201-4- Server should return valid error on existing user', (done) => {
-    //     users.push({
-    //         firstName: 'Jelle',
-    //         lastName: 'van Pol',
-    //         email: 'jellevanpol@ziggo.nl',
-    //         password: 'Password1!'
-    //     });
-
-    //     const newUser = {
-    //         firstName: 'John',
-    //         lastName: 'Doe',
-    //         email: 'Johndoe@example.com',
-    //         password: 'Password1!'
-    //     };
-
-    //     chai
-    //         .request(server)
-    //         .post('/api/register')
-    //         .send(newUser)
-    //         .end((err, res) => {
-    //             expect(res).to.have.status(403);
-    //             expect(res.body.message).to.equal('User already registered');
-    //             done();
-    //         });
-    // });
-    
-    it('TC-201-5- Server should return succes on user registered', (done) => {
-        // const newUser = {
-        //     firstName: 'John',
-        //     lastName: 'Doe',
-        //     email: 'Johndoe@example.com',
-        //     password: 'Password123!',
-        // };
-
-        // chai.request(server)
-        //     .post('/api/register')
-        //     .send(newUser)
-        //     .end((err, res) => {
-        //         assert(err === null)
-                
-        //         let { data, message, status } = res.body
-        //         expect(err).to.be.null;
-        //         expect(res).to.have.status(201);
-        //         expect(body.message).to.equal('User register-endpoint');
-        //         expect(data.newUser).to.have.property('id');
-        //         expect(data.newUser.firstName).to.equal(newUser.firstName);
-        //         expect(data.newUser.lastName).to.equal(newUser.lastName);
-        //         expect(data.newUser.email).to.equal(newUser.email);
-        //         expect(data.newUser.password).to.be.undefined;
-        //         done();
-
-        //     });
+    it('TC-201-4- Server should return valid error on existing user', (done) => {
         const newUser = {
             firstName: 'Jelle',
             lastName: 'van Pol',
             email: 'Jellevanpol@ziggo.nl',
+            password: 'Password1!'
+        };
+
+        chai
+            .request(server)
+            .post('/api/register')
+            .send(newUser)
+            .end((err, res) => {
+                assert(err===null)
+                expect(res).to.have.status(403);
+                expect(res.body.message).to.equal('User already registered');
+                done();
+            });
+    });
+    it('TC-201-5- Server should return succes on user registered', (done) => {
+        const newUser = {
+            firstName: 'Jelle',
+            lastName: 'van Pol',
+            email: 'Testemail@gmail.nl',
             password: 'Password1!'
           };
       
@@ -118,7 +86,6 @@ describe('Register', function () {
               message.should.be.a('string').that.contains('User added with id ')
               data.should.be.an('object')
       
-
               data.should.have.property( 'id' )
               data.firstName.should.equal('Jelle')
               data.lastName.should.equal('van Pol')
