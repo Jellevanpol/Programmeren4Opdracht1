@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../../index');
 const assert = require('assert');
+const exp = require('constants');
 chai.use(chaiHttp);
 chai.should();
 const expect = chai.expect;
@@ -18,7 +19,7 @@ describe('Delete user by ID', function () {
 
                 status.should.equal(200);
                 message.should.equal('User met ID ' + userId + ' deleted')
-
+                expect(data).to.be.an('object')
                 done();
             });
     });
