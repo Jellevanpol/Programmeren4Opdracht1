@@ -9,7 +9,7 @@ const expect = chai.expect;
 
 describe('Get user by ID', function () {
     it('TC-203-1- Should return the user with the specified ID', (done) => {
-      const userId = 0;
+      const userId = 1;
       chai
         .request(server)
         .get(`/api/user/${userId}`)
