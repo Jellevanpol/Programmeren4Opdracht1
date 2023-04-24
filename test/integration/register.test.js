@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../../index');
 const assert = require('assert');
+const { stat } = require('fs');
 chai.use(chaiHttp);
 chai.should();
 const expect = chai.expect;
@@ -49,7 +50,9 @@ describe('Register', function () {
             firstName: 'Jelle',
             lastName: 'van Pol',
             email: 'Jellevanpol@ziggo.nl',
-            password: 'Password1!'
+            password: 'Password1!',
+            phoneNumber: '0638681055',
+            active: true
         };
 
         chai
@@ -68,10 +71,11 @@ describe('Register', function () {
             firstName: 'Jelle',
             lastName: 'van Pol',
             email: 'Testemail@gmail.nl',
-            password: 'Password1!'
+            password: 'Password1!',
+            phoneNumber: '0638681055',
+            active: true
           };
       
-          // Voer de test uit
           chai
             .request(server)
             .post('/api/register')
@@ -82,8 +86,8 @@ describe('Register', function () {
               res.body.should.be.an('object')
               let { data, message, status } = res.body
       
-              status.should.equal(201)
-              message.should.be.a('string').that.contains('User added with id ')
+              expect(status).to.equal(201)
+              expect(message).to.be.a('string').that.contains('User added with id ')
               data.should.be.an('object')
       
               data.should.have.property( 'id' )

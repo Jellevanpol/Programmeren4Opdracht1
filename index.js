@@ -63,7 +63,9 @@ app.get('/api/info', (req, res) => {
 
 //UC-201
 app.post('/api/register', (req, res) => {
-    const user = req.body;
+    const user = req.body
+    const method = req.body
+    logger.info(`Method ${method} is called`)
 
     // Check for missing fields
     if (!user.firstName || typeof user.firstName !== 'string') {
@@ -212,9 +214,20 @@ app.get('/api/user', (req, res) => {
 
 //UC-203
 app.get('/api/user/profile', (req, res) => {
+    // const testProfile =  {
+    //     id: 0,
+    //     firstName: 'Test',
+    //     lastName: 'test',
+    //     email: 'Test@ziggo.nl',
+    //     phoneNumber: '0624994423',
+    //     password: 'Password1!',
+    //     active: true
+    //     }
+    
     res.status(200).json({
         status: 200,
         message: 'User profile endpoint, nog niet geïmplementeerd',
+        // data: testProfile
         data: {}
     })
 });

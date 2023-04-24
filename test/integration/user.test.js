@@ -16,7 +16,7 @@ describe('Get users', function () {
                 assert(err === null)
                 let{status, message, data} = res.body
                 expect(status).to.equal(200)
-                expect(message).to.contain('User lijst')
+                expect(message).to.equal('All users')
                 expect(data).to.be.an('array')
                 expect(data.length).to.be.at.least(2)
                 done()
