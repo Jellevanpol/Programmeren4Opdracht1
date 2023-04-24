@@ -16,7 +16,7 @@ describe('Register', function () {
                 expect(res).to.have.status(400);
                 expect(res.body.data).to.be.an('object');
                 expect(res.body.data).to.be.empty;
-                expect(res.body.message).to.equal('All fields are required!');
+                expect(res.body.message).to.contain('is invalid!');
                 done();
             });
     });

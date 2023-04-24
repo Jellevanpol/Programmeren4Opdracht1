@@ -1,19 +1,19 @@
 const express = require('express')
 const app = express()
 const port = 3000
-const logger = require('tracer').console()
+const logger = require('./src/utils/util').logger;
 
 //In memory database
 let database = {
     users: [
         {
             id: 0,
-            firstname: 'Jelle',
-            lastname: 'van Pol',
+            firstName: 'Jelle',
+            lastName: 'van Pol',
             email: 'Jellevanpol@ziggo.nl',
             phoneNumber: '0627849603',
             password: 'Password1!',
-            Active: true
+            active: true
         },
         {
             id: 1,
@@ -22,7 +22,7 @@ let database = {
             email: 'Johndoe@gmail.com',
             phoneNumber: '0683917300',
             password: 'Password1!',
-            Active: true
+            active: true
         },
         {
             id: 2,
@@ -31,7 +31,7 @@ let database = {
             email: 'Johndoe2@gmail.com',
             password: 'Password1!',
             phoneNumber: '0696547823',
-            Active: false
+            active: false
         }
     ]
 };
@@ -49,15 +49,54 @@ app.listen(port, () => {
     logger.log(`Example app listening on port ${port}`)
 })
 
+app.get('/api/info', (req, res) => {
+    res.status(201).json({
+        status: 201,
+        message: 'Server info-endpoint',
+        data: {
+            studentName: 'Jelle',
+            studentNumber: 2203205,
+            description: 'Welkom bij de server API van de share-a-meal'
+        },
+    })
+});
+
 //UC-201
 app.post('/api/register', (req, res) => {
     const user = req.body;
 
     // Check for missing fields
-    if (!user.firstName || !user.lastName || !user.email || !user.password || !user.phoneNumber) {
+    if (!user.firstName || typeof user.firstName !== 'string') {
         res.status(400).json({
             status: 400,
-            message: 'All fields are required!',
+            message: 'firstName (string) is invalid!',
+            data: {}
+        });
+        return;
+    }
+    
+    if (!user.lastName || typeof user.lastName !== 'string') {
+        res.status(400).json({
+            status: 400,
+            message: 'lastName (string) is invalid!',
+            data: {}
+        });
+        return;
+    }
+    
+    if (!user.email || typeof user.email !== 'string') {
+        res.status(400).json({
+            status: 400,
+            message: 'email (string) is invalid!',
+            data: {}
+        });
+        return;
+    }
+    
+    if (!user.password || typeof user.password !== 'string' ) {
+        res.status(400).json({
+            status: 400,
+            message: 'password (string) is invalid!',
             data: {}
         });
         return;
@@ -294,7 +333,6 @@ app.delete('/api/user/:userId', (req, res) => {
         message: 'User met ID ' + userId + ' deleted',
         data: {}
     });
-
 });
 
 app.use('*', (req, res) => {
