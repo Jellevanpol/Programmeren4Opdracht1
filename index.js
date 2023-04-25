@@ -16,6 +16,7 @@ app.listen(port, () => {
     logger.log(`Example app listening on port ${port}`)
 })
 
+//Api info
 app.get('/api/info', (req, res) => {
     res.status(201).json({
         status: 201,
@@ -27,6 +28,7 @@ app.get('/api/info', (req, res) => {
         },
     })
 });
+
 
 app.use('/api/user', userRoutes)
 

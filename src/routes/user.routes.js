@@ -1,8 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const userController = require('../controllers/user.controller')
-const database = require('../utils/database')
-const logger = require('../utils/util').logger
 
 //Alle routes
 //UC-201
