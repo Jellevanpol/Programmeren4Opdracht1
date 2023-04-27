@@ -14,9 +14,9 @@ describe('Get users', function () {
             .get('/api/user')
             .end((err, res) => {
                 assert(err === null)
-                let{status, message, data} = res.body
+                let { status, message, data } = res.body
                 expect(status).to.equal(200)
-                expect(message).to.equal('All users')
+                expect(message).to.equal('User getAll endpoint')
                 expect(data).to.be.an('array')
                 expect(data.length).to.be.at.least(2)
                 done()

@@ -3,48 +3,7 @@ const logger = require('../utils/util').logger
 
 const userController = {
     //UC-201
-    createUser: (req, res) => {
-        // const user = req.body
-        // const method = req.body
-        // logger.info(`Method ${method} is called`)
-
-        // // Check for missing fields
-        // if (!user.firstName || typeof user.firstName !== 'string') {
-        //     res.status(400).json({
-        //         status: 400,
-        //         message: 'firstName (string) is invalid!',
-        //         data: {}
-        //     });
-        //     return;
-        // }
-
-        // if (!user.lastName || typeof user.lastName !== 'string') {
-        //     res.status(400).json({
-        //         status: 400,
-        //         message: 'lastName (string) is invalid!',
-        //         data: {}
-        //     });
-        //     return;
-        // }
-
-        // if (!user.email || typeof user.email !== 'string') {
-        //     res.status(400).json({
-        //         status: 400,
-        //         message: 'email (string) is invalid!',
-        //         data: {}
-        //     });
-        //     return;
-        // }
-
-        // if (!user.password || typeof user.password !== 'string') {
-        //     res.status(400).json({
-        //         status: 400,
-        //         message: 'password (string) is invalid!',
-        //         data: {}
-        //     });
-        //     return;
-        // }
-
+    createUser: (req, res, next) => {
         // // Check for invalid email format
         // const emailRegex = /\S+@\S+\.\S+/;
         // if (!emailRegex.test(user.email)) {
@@ -135,39 +94,24 @@ const userController = {
                         };
 
                         // Check for missing fields
-                        if (!user.firstName || typeof user.firstName !== 'string') {
-                            res.status(400).json({
-                                status: 400,
-                                message: 'firstName (string) is invalid!',
-                                data: {}
-                            });
-                            return;
+                        function validateField(fieldName, fieldType, fieldValue) {
+                            if (!fieldValue || typeof fieldValue !== fieldType) {
+                                res.status(400).json({
+                                    status: 400,
+                                    message: `${fieldName} (${fieldType}) is invalid!`,
+                                    data: {}
+                                });
+                                return false;
+                            }
+                            return true;
                         }
 
-                        if (!user.lastName || typeof user.lastName !== 'string') {
-                            res.status(400).json({
-                                status: 400,
-                                message: 'lastName (string) is invalid!',
-                                data: {}
-                            });
-                            return;
-                        }
-
-                        if (!user.emailAdress || typeof user.emailAdress !== 'string') {
-                            res.status(400).json({
-                                status: 400,
-                                message: 'email (string) is invalid!',
-                                data: {}
-                            });
-                            return;
-                        }
-
-                        if (!user.password || typeof user.password !== 'string') {
-                            res.status(400).json({
-                                status: 400,
-                                message: 'password (string) is invalid!',
-                                data: {}
-                            });
+                        if (!validateField('firstName', 'string', user.firstName) ||
+                            !validateField('lastName', 'string', user.lastName) ||
+                            !validateField('email', 'string', user.emailAdress) ||
+                            !validateField('password', 'string', user.password) ||
+                            !validateField('phoneNumber', 'string', user.phoneNumber)
+                        ) {
                             return;
                         }
                         conn.query(
@@ -299,7 +243,8 @@ const userController = {
     },
 
     //UC-205
-    updateUser: (req, res) => {
+    updateUser: (req, res, next) => {
+        const userId = parseInt(req.params.userId)
         // const userId = parseInt(req.params.userId); // convert userId to an integer
         // const user = database.users.find(user => user.id === userId);
 
@@ -397,8 +342,72 @@ const userController = {
         //         user
         //     }
         // });
+        pool.getConnection(function (err, conn) {
+            if (err) {
+                console.log('error')
+                next('error: ' + err.message)
+            }
+            if (conn) {
+                const user = {
+                    id: userId,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    isActive: req.body.isActive,
+                    emailAdress: req.body.emailAdress,
+                    password: req.body.password,
+                    phoneNumber: req.body.phoneNumber,
+                    roles: req.body.roles,
+                    street: req.body.street,
+                    city: req.body.city
+                };
 
+                // Check for missing fields
+                function validateField(fieldName, fieldType, fieldValue) {
+                    if (!fieldValue || typeof fieldValue !== fieldType) {
+                        res.status(400).json({
+                            status: 400,
+                            message: `${fieldName} (${fieldType}) is invalid!`,
+                            data: {}
+                        });
+                        return false;
+                    }
+                    return true;
+                }
 
+                if (!validateField('firstName', 'string', user.firstName) ||
+                    !validateField('lastName', 'string', user.lastName) ||
+                    !validateField('email', 'string', user.emailAdress) ||
+                    !validateField('password', 'string', user.password) ||
+                    !validateField('phoneNumber', 'string', user.phoneNumber) ||
+                    !validateField('isActive', 'number', user.isActive)
+                ) {
+                    return;
+                }
+
+                conn.query(
+                    'UPDATE `user` SET `firstName` = ?, `lastName` = ?, `isActive` = ?, `emailAdress` = ?, `password` = ?, `phoneNumber` = ?, `roles` = ?, `street` = ?, `city` = ? WHERE `id` = ?',
+                    [user.firstName, user.lastName, user.isActive, user.emailAdress, user.password, user.phoneNumber, user.roles, user.street, user.city, user.id],
+                    function (err, results) {
+                        if (err) {
+                            res.status(500).json({
+                                status: 500,
+                                message: err.sqlMessage,
+                                data: {}
+                            });
+                            return;
+                        }
+
+                        logger.info('results: ', results); // results contains rows affected by server
+                        res.status(200).json({
+                            status: 200,
+                            message: 'User updated with id ' + user.id,
+                            data: user
+                        });
+                        pool.releaseConnection(conn);
+                    }
+                );
+            }
+        })
     },
 
     //UC-206

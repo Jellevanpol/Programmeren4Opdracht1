@@ -13,6 +13,7 @@ describe('Register', function () {
             .request(server)
             .post('/api/user')
             .end((err, res) => {
+                assert(err === null)
                 expect(res).to.have.status(400);
                 expect(res.body.data).to.be.an('object');
                 expect(res.body.data).to.be.empty;
@@ -27,8 +28,9 @@ describe('Register', function () {
             .post('/api/user')
             .send({ firstName: 'Jelle', lastName: 'van Pol', email: invalidEmail, password: 'Password' })
             .end((err, res) => {
+                assert (err === null)
                 expect(res).to.have.status(400);
-                expect(res.body.message).to.equal('Invalid email format!');
+                expect(res.body.message).to.equal('email (string) is invalid!');
                 done();
             });
     });
@@ -37,8 +39,9 @@ describe('Register', function () {
         chai
             .request(server)
             .post('/api/user')
-            .send({ firstName: 'Jelle', lastName: 'van Pol', email: 'Jellevanpol@ziggo.nl', password: invalidPassword })
+            .send({ firstName: 'Jelle', lastName: 'van Pol', emailAdress: 'Test@ziggo.nl', password: invalidPassword })
             .end((err, res) => {
+                assert (err === null)
                 expect(res).to.have.status(400);
                 expect(res.body.message).to.equal('Invalid password format!');
                 done();
