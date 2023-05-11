@@ -3,37 +3,38 @@ const logger = require('../utils/util').logger
 
 const userController = {
     //UC-201
-    createUser: (req, res, next) => {
+     createUser: (req, res, next) => {
         pool.getConnection(function (err, conn) {
-            if (err) {
-                console.log('error');
-                next('error: ' + err.message);
-            } else {
-                conn.query(
-                    'SELECT COUNT(*) AS count FROM `user`',
-                    function (err, results) {
-                        if (err) {
-                            res.status(500).json({
-                                status: 500,
-                                message: err.sqlMessage,
-                                data: {},
-                            });
-                        } else {
-                            const count = results[0].count;
-                            const userId = count + 1;
-
-                            const user = {
-                                id: userId,
-                                firstName: req.body.firstName,
-                                lastName: req.body.lastName,
-                                isActive: 1,
-                                emailAdress: req.body.emailAdress,
-                                password: req.body.password,
-                                phoneNumber: req.body.phoneNumber,
-                                roles: req.body.roles,
-                                street: req.body.street,
-                                city: req.body.city,
-                            };
+          if (err) {
+            console.log('error');
+            next('error: ' + err.message);
+          } else {
+            conn.query(
+              'SELECT COUNT(*) AS count FROM `user`',
+              function (err, results) {
+                if (err) {
+                  res.status(500).json({
+                    status: 500,
+                    message: err.sqlMessage,
+                    data: {},
+                  });
+                } else {
+                  const count = results[0].count;
+                  const userId = count + 1;
+      
+                  const user = {
+                    id: userId,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    isActive: 1, // Updated property name to 'active'
+                    emailAdress: req.body.emailAdress,
+                    password: req.body.password,
+                    phoneNumber: req.body.phoneNumber,
+                    roles: req.body.roles,
+                    street: req.body.street,
+                    city: req.body.city,
+                  };
+      
 
                             // Check for missing fields
                             function validateField(fieldName, fieldType, fieldValue) {
@@ -98,7 +99,7 @@ const userController = {
 
     //UC-202
     getAllUsers: (req, res, next) => {
-        const active = req.query.active;
+        const active = req.query.isActive;
         const name = req.query.name;
         const method = req.body
         logger.info(`Method ${method} is called`)
@@ -141,7 +142,7 @@ const userController = {
             emailAdress: 'Test@ziggo.nl',
             phoneNumber: '0624994423',
             password: 'Password1!',
-            active: true
+            isActive: 1
         }
 
         const method = req.body
@@ -198,40 +199,6 @@ const userController = {
 
     //UC-205
     updateUser: (req, res, next) => {
-
-
-        // // Check for invalid email format
-        // const emailRegex = /\S+@\S+\.\S+/;
-        // if (!emailRegex.test(email)) {
-        //     res.status(400).json({
-        //         status: 400,
-        //         message: 'Invalid email format!',
-        //         data: {}
-        //     });
-        //     return;
-        // }
-
-        // const phoneNumberRegex = /^(06)[0-9]{8}$/
-        // if (!phoneNumberRegex.test(phoneNumber)) {
-        //     res.status(400).json({
-        //         status: 400,
-        //         message: 'Invalid phonenumber format! (i.e. 0612345678)',
-        //         data: {}
-        //     });
-        //     return;
-        // }
-
-        // // Check for invalid password format
-        // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        // if (!passwordRegex.test(password)) {
-        //     res.status(400).json({
-        //         status: 400,
-        //         message: 'Invalid password format!',
-        //         data: {}
-        //     });
-        //     return;
-        // }
-
         pool.getConnection(function (err, conn) {
             if (err) {
                 console.log('error')
@@ -254,7 +221,16 @@ const userController = {
 
                 // Check for missing fields
                 function validateField(fieldName, fieldType, fieldValue) {
-                    if (!fieldValue || typeof fieldValue !== fieldType) {
+                    if (fieldValue === undefined || fieldValue === null || fieldValue === '') {
+                        res.status(400).json({
+                            status: 400,
+                            message: `${fieldName} is required`,
+                            data: {}
+                        });
+                        return false;
+                    }
+                
+                    if (typeof fieldValue !== fieldType) {
                         res.status(400).json({
                             status: 400,
                             message: `${fieldName} (${fieldType}) is invalid!`,
@@ -262,18 +238,20 @@ const userController = {
                         });
                         return false;
                     }
+                
                     return true;
                 }
 
-                if (!validateField('firstName', 'string', user.firstName) ||
+                if (
+                    !validateField('firstName', 'string', user.firstName) ||
                     !validateField('lastName', 'string', user.lastName) ||
                     !validateField('emailAdress', 'string', user.emailAdress) ||
                     !validateField('password', 'string', user.password) ||
                     !validateField('phoneNumber', 'string', user.phoneNumber) ||
-                    !validateField('isActive', 'number', user.isActive)
-                ) {
+                    !validateField('isActive', 'boolean', user.isActive) // Updated validation for isActive field
+                  ) {
                     return;
-                }
+                  }
 
                 conn.query(
                     'UPDATE `user` SET `firstName` = ?, `lastName` = ?, `isActive` = ?, `emailAdress` = ?, `password` = ?, `phoneNumber` = ?, `roles` = ?, `street` = ?, `city` = ? WHERE `id` = ?',
@@ -303,40 +281,55 @@ const userController = {
 
     //UC-206
     deleteUser: (req, res, next) => {
-        const userId = parseInt(req.params.userId)
+        const userId = parseInt(req.params.userId);
         pool.getConnection(function (err, conn) {
-            // Do something with the connection
-            if (err) {
-                console.log('error')
-                next('error: ' + err.message)
-            }
-            if (conn) {
+          if (err) {
+            console.log('error getting connection:', err);
+            next('error: ' + err.message);
+            return;
+          }
+          if (conn) {
+            // Delete associated meals first
+            conn.query(
+              'DELETE FROM `meal` WHERE `cookId` = ?',
+              [userId],
+              function (err, results) {
+                if (err) {
+                  console.log('error deleting meals:', err);
+                  res.status(500).json({
+                    status: 500,
+                    message: err.sqlMessage,
+                    data: {}
+                  });
+                  return;
+                }
+                // Proceed with deleting the user
                 conn.query(
-                    'DELETE FROM `user` WHERE `id` = ?',
-                    [userId],
-                    function (err, results) {
-                        if (err) {
-                            res.status(500).json({
-                                status: 500,
-                                message: err.sqlMessage,
-                                data: {}
-                            });
-                            return;
-                        }
-
-                        // logger.info('results: ', results); // results contains rows affected by server
-                        res.status(200).json({
-                            status: 200,
-                            message: 'User deleted with id ' + userId,
-                            data: results
-                        });
-                        pool.releaseConnection(conn);
+                  'DELETE FROM `user` WHERE `id` = ?',
+                  [userId],
+                  function (err, results) {
+                    if (err) {
+                      console.log('error deleting user:', err);
+                      res.status(500).json({
+                        status: 500,
+                        message: err.sqlMessage,
+                        data: {}
+                      });
+                      return;
                     }
+                    res.status(200).json({
+                      status: 200,
+                      message: 'User deleted with id ' + userId,
+                      data: results
+                    });
+                  }
                 );
-                pool.releaseConnection(conn)
-            }
-        })
-    },
+              }
+            );
+            pool.releaseConnection(conn);
+          }
+        });
+      },
 }
 
 module.exports = userController

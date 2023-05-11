@@ -75,7 +75,7 @@ describe('Register', function () {
             emailAdress: 'Testemail@gmail.nl',
             password: 'Password1!',
             phoneNumber: '0638681055',
-            active: true
+            isActive: 1
         };
 
         chai

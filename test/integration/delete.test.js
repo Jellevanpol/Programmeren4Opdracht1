@@ -8,17 +8,17 @@ const expect = chai.expect;
 
 describe('Delete user by ID', function () {
     it('TC-206-4- Should delete the user with the specified ID', (done) => {
-        const userId = 2;
-        chai
-            .request(server)
-            .delete(`/api/user/${userId}`)
-            .end((err, res) => {
-                assert(err === null);
-                let { data, message, status } = res.body;
-                status.should.equal(200);
-                message.should.equal('User met ID ' + userId + ' deleted')
-                expect(data).to.be.an('object')
-                done();
-            });
+      const userId = 2;
+      chai
+        .request(server)
+        .delete(`/api/user/${userId}`)
+        .end((err, res) => {
+          assert(err === null);
+          let { data, message, status } = res.body;
+          status.should.equal(200);
+          message.should.equal('User deleted with id ' + userId);
+          expect(data).to.be.an('object');
+          done();
+        });
     });
-})
+  });
