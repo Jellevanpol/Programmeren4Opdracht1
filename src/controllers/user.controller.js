@@ -156,7 +156,7 @@ const userController = {
     },
 
     //UC-204
-    getUser: (req, res) => {
+    getUser: (req, res, next) => {
         const userId = parseInt(req.params.userId)
         pool.getConnection(function (err, conn) {
             // Do something with the connection
