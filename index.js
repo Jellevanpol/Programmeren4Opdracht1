@@ -34,7 +34,6 @@ app.use('/api/meal', mealRoutes);
 app.use('/api', authRoutes)
 
 app.use('*', (req, res) => {
-  logger.warn('Invalid endpoint called: ', req.path);
   res.status(404).json({
     status: 404,
     message: 'Endpoint not found',

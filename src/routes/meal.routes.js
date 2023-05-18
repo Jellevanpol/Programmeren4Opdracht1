@@ -3,25 +3,19 @@ const router = express.Router();
 const mealController = require('../controllers/meal.controller');
 const authController = require('../controllers/authentication.controller');
 
-// Hier werk je de routes uit.
+// UC-301 Create nieuwe meal
+router.post('', mealController.createMeal);
 
-// UC-301 Registreren als nieuwe meal
-router.post('', authController.validateToken ,mealController.createMeal);
+//UC-302 Updaten meal -> niet verplicht
+// router.put('/:mealId', mealController.updateMeal);
 
-// UC-302 Opvragen van overzicht van meals
-router.get('', authController.validateToken, mealController.getAllMeals);
+// UC-303 Opvragen van overzicht van meals
+router.get('', mealController.getAllMeals);
 
-//Delete
+//UC-304 Get meal by ID
+router.get('/:mealId', mealController.getMeal);
+
+//UC 305 Verwijderen meal
 router.delete('/:mealId', authController.validateToken, mealController.deleteMeal);
-
-// router.get('', mealController.getAllMeals);
-
-// UC-303 Haal het mealprofile op van de meal die ingelogd is
-router.get(
-  '/profile',
-  authController.validateToken,
-  // authController.validateLogin,
-  mealController.getMealProfile
-);
 
 module.exports = router;
