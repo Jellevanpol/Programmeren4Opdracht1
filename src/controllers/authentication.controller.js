@@ -63,10 +63,16 @@ module.exports = {
                                 logger.info('Payload: ', payload)
 
                             });
+                        } else if (results.length === 0) {
+                            next({
+                                code: 404,
+                                message: 'User not found',
+                                data: undefined
+                            });
                         } else {
                             //user wel gevonden maar password matcht niet
                             next({
-                                code: 401,
+                                code: 400,
                                 message: 'Not authorized',
                                 data: undefined
                             });
@@ -96,7 +102,7 @@ module.exports = {
             );
             next();
         } catch (ex) {
-            res.status(422).json({
+            res.status(400).json({
                 error: ex.toString(),
                 datetime: new Date().toISOString()
             });

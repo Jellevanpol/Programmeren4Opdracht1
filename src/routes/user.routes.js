@@ -14,12 +14,12 @@ router.get('', userController.getAllUsers);
 router.get('/profile',  authController.validateToken, userController.getUserProfile);
 
 //UC-204
-router.get('/:userId', userController.getUser);
+router.get('/:userId', authController.validateToken, userController.getUser);
 
 //UC-205
-router.put('/:userId', userController.updateUser);
+router.put('/:userId', authController.validateToken, userController.updateUser);
 
 //UC-206
-router.delete('/:userId', userController.deleteUser);
+router.delete('/:userId', authController.validateToken, userController.deleteUser);
 
 module.exports = router

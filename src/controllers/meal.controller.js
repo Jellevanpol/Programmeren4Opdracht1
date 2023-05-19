@@ -120,18 +120,16 @@ const mealController = {
 
   createMeal: (req, res, next) => {
     const userId = req.userId
-    // var currentDate = new Date();
-    // var dateTime = currentDate.toISOString();
     var currentDate = new Date();
-var isoDateTime = currentDate.toISOString();
-var dateTime = isoDateTime.replace('T', ' ').replace('Z', '');
+    var isoDateTime = currentDate.toISOString();
+    var dateTime = isoDateTime.replace('T', ' ').replace('Z', '');
 
     logger.info('Create new meal, cookId = ' + userId);
 
     // De mealgegevens zijn meegestuurd in de request body.
     const meal = req.body;
     logger.trace('meal = ', meal);
-    const isActive =  1
+    const isActive = 1
     // Hier zie je hoe je binnenkomende meal info kunt valideren.
     try {
       assert(typeof meal.isVega === 'number', 'isVega must be a number');
@@ -160,7 +158,7 @@ var dateTime = isoDateTime.replace('T', ' ').replace('Z', '');
     // let sqlStatement = 'INSERT INTO `meal` (`isActive`, `isVega`, `isVegan`, `isToTakeHome`, `dateTime`, `maxAmountOfParticipants`, `price`, `imageUrl`, `name`, `description`, `allergenes`, `cookId`) VALUES' +
     //   "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); " +
     //   'Select * FROM user WHERE id=? '
-      let sqlStatement = 'INSERT INTO `meal` (`isActive`, `isVega`, `isVegan`, `isToTakeHome`, `dateTime`, `maxAmountOfParticipants`, `price`, `imageUrl`, `name`, `description`, `allergenes`, `cookId`) VALUES' +
+    let sqlStatement = 'INSERT INTO `meal` (`isActive`, `isVega`, `isVegan`, `isToTakeHome`, `dateTime`, `maxAmountOfParticipants`, `price`, `imageUrl`, `name`, `description`, `allergenes`, `cookId`) VALUES' +
       "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); " +
       'Select * FROM user WHERE id=? '
     pool.getConnection(function (err, conn) {
@@ -174,7 +172,7 @@ var dateTime = isoDateTime.replace('T', ' ').replace('Z', '');
       }
       if (conn) {
         conn.query(sqlStatement, [isActive, meal.isVega, meal.isVegan, meal.isToTakeHome, dateTime, meal.maxAmountOfParticipants, meal.price, meal.imageUrl,
-        meal.name, meal.description, meal.allergenes, userId, userId],
+          meal.name, meal.description, meal.allergenes, userId, userId],
           function (err, results, fields) {
             if (err) {
               logger.error(err.message);
@@ -189,7 +187,7 @@ var dateTime = isoDateTime.replace('T', ' ').replace('Z', '');
               res.status(200).json({
                 code: 200,
                 message: "meal created with id",
-                data: {results}
+                data: { results }
               })
             }
           });
@@ -204,7 +202,7 @@ var dateTime = isoDateTime.replace('T', ' ').replace('Z', '');
     const mealId = req.params.mealId;
     const userId = req.userId;
     logger.info("Update meal by id =", mealId, "by user", userId);
-  
+
     try {
       assert(typeof req.body.isActive === "number", "isActive must be a number");
       assert(typeof req.body.isVega === "number", "isVega must be a number");
@@ -236,13 +234,13 @@ var dateTime = isoDateTime.replace('T', ' ').replace('Z', '');
         message: "Invalid input for one or more fields",
         data: {},
       });
-  
+
       return;
     }
-  
+
     let sqlStatement =
       'UPDATE `meal` SET `isActive`=?, `isVega`=?, `isVegan`=?, `isToTakeHome`=?, `maxAmountOfParticipants`=?, `price`=?, `imageUrl`=?, `name`=?, `description`=?, `allergenes`=? WHERE `id`=? AND `cookId`=?';
-  
+
     pool.getConnection(function (err, conn) {
       if (err) {
         logger.error(err.code, err.syscall, err.address, err.port);
