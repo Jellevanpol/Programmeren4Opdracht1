@@ -228,13 +228,11 @@ const mealController = {
     } catch (err) {
       logger.warn(err.message.toString());
       // If any of the assertions fail, send an error response.
-      next({
+      return res.status(400).json({
         code: 400,
         message: "Invalid input for one or more fields",
         data: {},
       });
-
-      return;
     }
 
     let sqlStatement =
@@ -243,7 +241,7 @@ const mealController = {
     pool.getConnection(function (err, conn) {
       if (err) {
         logger.error(err.code, err.syscall, err.address, err.port);
-        next({
+        return res.status(500).json({
           code: 500,
           message: err.code,
         });
@@ -268,7 +266,7 @@ const mealController = {
           (err, results, fields) => {
             if (err) {
               logger.error(err.message);
-              next({
+              return res.status(409).json({
                 code: 409,
                 message: err.message,
               });
@@ -276,7 +274,7 @@ const mealController = {
             if (results && results.affectedRows > 0) {
               logger.trace(results);
               logger.info("Found", results.length, "results");
-              res.status(200).json({
+              return res.status(200).json({
                 statusCode: 200,
                 message: "Meal updated with id: " + mealId,
                 data: meal,
