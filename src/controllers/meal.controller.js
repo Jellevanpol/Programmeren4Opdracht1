@@ -122,8 +122,7 @@ const mealController = {
   createMeal: (req, res, next) => {
     const userId = req.userId
     var currentDate = new Date();
-    var isoDateTime = currentDate.toISOString();
-    var dateTime = isoDateTime.replace('T', ' ').replace('Z', '');
+    var dateTime = currentDate.toISOString().slice(0, 19).replace("T", " ");
 
     logger.info('Create new meal, cookId = ' + userId);
 
