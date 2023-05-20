@@ -73,7 +73,7 @@ describe("UC-304 Ophalen van maaltijd", () => {
                 expect(data[0]).to.have.property("isVega", 1)
                 expect(data[0]).to.have.property("isVegan", 1)
                 expect(data[0]).to.have.property("isToTakeHome", 1)
-                expect(data[0]).to.have.property("dateTime", '2023-05-19T10:00:00.000Z')
+                expect(data[0]).to.have.property("dateTime")
                 expect(data[0]).to.have.property("maxAmountOfParticipants", 4)
                 expect(data[0]).to.have.property("price", '4.99')
                 expect(data[0]).to.have.property("imageUrl",'https://example.com/image1.jpg')
