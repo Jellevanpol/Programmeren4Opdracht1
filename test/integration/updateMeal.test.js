@@ -160,7 +160,7 @@ describe("UC-302 Updaten van maaltijd", () => {
             isToTakeHome: 1,
             imageUrl: "example.jpg",
             description: "Example description",
-            allergenes: "Example allergenes",
+            allergenes: "Lactose",
         };
 
         chai
