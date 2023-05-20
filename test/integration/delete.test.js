@@ -40,7 +40,7 @@ describe('Delete user by ID', function () {
     it("TC-206-1- Should return an error if the user to be deleted doesn't exist", (done) => {
         const token = jwt.sign({ userId: 6 }, jwtSecretKey);
         const nonExistingUserId = 999
-    
+
         chai
             .request(server)
             .delete(`/api/user/${nonExistingUserId}`)
@@ -58,10 +58,30 @@ describe('Delete user by ID', function () {
             });
     });
 
-    it("TC-206-2- Should return an error if the user trying to be deleted is not the same as the logged-in user", (done) => {
+    it("TC-206-2- Should return an error if there is no logged-in user", (done) => {
+        const userId = 6; // Assuming the user to be deleted has an ID of 1
+
+        chai
+            .request(server)
+            .delete(`/api/user/${userId}`)
+            .set('Authorization', 'Bearer ') // Empty token to simulate no logged-in user
+            .end((err, res) => {
+                assert(err === null);
+                const { body } = res;
+                res.should.have.status(401);
+                body.should.have.property("statusCode").to.be.equal(401);
+                body.should.have.property("message").to.be.equal("Invalid token!");
+                body.should.have.property("data");
+                const { data } = body;
+                data.should.be.an("object").and.to.be.empty;
+                done();
+            });
+    });
+
+    it("TC-206-3- Should return an error if the user trying to be deleted is not the same as the logged-in user", (done) => {
         const token = jwt.sign({ userId: 6 }, jwtSecretKey);
         const otherUserId = 7
-    
+
         chai
             .request(server)
             .delete(`/api/user/${otherUserId}`)
@@ -78,26 +98,6 @@ describe('Delete user by ID', function () {
                 done();
             });
     });
-
-    it("TC-206-3- Should return an error if there is no logged-in user", (done) => {
-    const userId = 1; // Assuming the user to be deleted has an ID of 1
-
-    chai
-        .request(server)
-        .delete(`/api/user/${userId}`)
-        .set('Authorization', 'Bearer ') // Empty token to simulate no logged-in user
-        .end((err, res) => {
-            assert(err === null);
-            const { body } = res;
-            res.should.have.status(401);
-            body.should.have.property("statusCode").to.be.equal(401);
-            body.should.have.property("message").to.be.equal("Invalid token!");
-            body.should.have.property("data");
-            const { data } = body;
-            data.should.be.an("object").and.to.be.empty;
-            done();
-        });
-});
 
     it('TC-206-4- Should delete the user with the specified ID', (done) => {
         const token = jwt.sign({ userId: 6 }, jwtSecretKey);

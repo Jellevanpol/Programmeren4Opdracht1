@@ -23,7 +23,6 @@ const INSERT_USER =
     "INSERT INTO user (id, firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city)" +
     "VALUES (6, 'John', 'deere', 1, 'john.deere@example.com', 'Password12', 0634567890, 'manager', 'dorpsstraat', 'Breda'), (7, 'john', 'doe', 1, 'john.doe@example.com', 'Password12', 0612345678, 'user', 'Straat 12', 'Nur Sultan')";
 
-
 describe('Get users', function () {
     before((done) => {
         // Clear the database and insert a user for testing
@@ -35,6 +34,7 @@ describe('Get users', function () {
             });
         });
     });
+
     it('TC-202-1- Should return all users from the database', (done) => {
         chai
             .request(server)
@@ -49,6 +49,71 @@ describe('Get users', function () {
                 done()
             })
     })
+
+    it('TC-202-2- Should return an empty array when searching with non-existing fields', (done) => {
+        chai
+            .request(server)
+            .get('/api/user')
+            .query({ nonExistingField: 'someValue' })
+            .end((err, res) => {
+                assert(err === null)
+                let { statusCode, message, data } = res.body
+                expect(statusCode).to.equal(200)
+                expect(message).to.equal('Invalid filter(s) used')
+                expect(data).to.be.an('object')
+                done()
+            })
+    })
+
+    it('TC-202-3- Should return users with isActive=false when searching with isActive=false', (done) => {
+        chai
+            .request(server)
+            .get('/api/user')
+            .query({ isActive: 'false' })
+            .end((err, res) => {
+                assert(err === null)
+                let { status, message, data } = res.body
+                expect(status).to.equal(200)
+                expect(message).to.equal('User getAll endpoint')
+                expect(data).to.be.an('array')
+                // Add assertions to check if the users have isActive=false
+                // Example: expect(data[0].isActive).to.be.false
+                done()
+            })
+    })
+
+    it('TC-202-4- Should return users with isActive=true when searching with isActive=true', (done) => {
+        chai
+            .request(server)
+            .get('/api/user')
+            .query({ isActive: 'true' })
+            .end((err, res) => {
+                assert(err === null)
+                let { status, message, data } = res.body
+                expect(status).to.equal(200)
+                expect(message).to.equal('User getAll endpoint')
+                expect(data).to.be.an('array')
+                // Add assertions to check if the users have isActive=true
+                // Example: expect(data[0].isActive).to.be.true
+                done()
+            })
+    })
+
+    it('TC-202-5- Should return users matching search terms on existing fields (max 2 fields)', (done) => {
+        chai
+            .request(server)
+            .get('/api/user')
+            .query({ isActive: 'true', roles: 'user' })
+            .end((err, res) => {
+                assert(err === null)
+                let { status, message, data } = res.body
+                expect(status).to.equal(200)
+                expect(message).to.equal('User getAll endpoint')
+                expect(data).to.be.an('array')
+                done()
+            })
+    })
+
     after((done) => {
         // Clear the database after testing
         pool.query(CLEAR_DB, (err, result) => {
@@ -56,4 +121,4 @@ describe('Get users', function () {
             done();
         });
     });
-})
+});

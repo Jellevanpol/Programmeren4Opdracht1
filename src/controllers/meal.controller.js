@@ -42,15 +42,11 @@ const mealController = {
   },
 
   getMeal: (req, res, next) => {
-    logger.info('Get  meal');
-
+    logger.info('Get meal');
     const mealId = parseInt(req.params.mealId);
-
     let sqlStatement = 'SELECT * FROM `meal` WHERE id = ? ';
-    // Hier wil je misschien iets doen met mogelijke filterwaarden waarop je zoekt.
 
     pool.getConnection(function (err, conn) {
-      // Do something with the connection
       if (err) {
         logger.error(err.code, err.syscall, err.address, err.port);
         next({
@@ -61,13 +57,18 @@ const mealController = {
       if (conn) {
         conn.query(sqlStatement, [mealId], function (err, results, fields) {
           if (err) {
-            logger.err(err.message);
+            logger.error(err.message);
             next({
               code: 409,
               message: err.message
             });
-          }
-          if (results) {
+          } else if (results.length === 0) {
+            logger.info('Meal not found');
+            next({
+              code: 404,
+              message: 'Meal not found'
+            });
+          } else {
             logger.info('Found', results.length, 'results');
             res.status(200).json({
               code: 200,
@@ -182,12 +183,13 @@ const mealController = {
               });
             }
             if (results) {
+              const mealId = results.insertId
               logger.trace('Meal successfully added, id =', results.insertId);
               results[0].insertId
-              res.status(200).json({
-                code: 200,
+              res.status(201).json({
+                code: 201,
                 message: "meal created with id",
-                data: { results }
+                data: { mealId, ...meal }
               })
             }
           });
@@ -196,9 +198,8 @@ const mealController = {
     });
   },
 
-  // uc 302 Wijzigen van maaltijdgegevens
   updateMeal: (req, res, next) => {
-    const meal = req.body
+    const meal = req.body;
     const mealId = req.params.mealId;
     const userId = req.userId;
     logger.info("Update meal by id =", mealId, "by user", userId);
@@ -284,58 +285,87 @@ const mealController = {
               });
             } else {
               logger.info("Not authorized to update meal with id: " + mealId);
-              res.status(401).json({
-                statusCode: 401,
-                message: "Not authorized to update meal with id: " + mealId,
-                data: results,
+              res.status(403).json({ // Change the status code to 403
+                statusCode: 403,
+                message: "Not authorized",
+                data: {}
               });
             }
           }
         );
         pool.releaseConnection(conn);
       }
-    });
+    }); 
   },
 
   deleteMeal: (req, res, next) => {
-    const mealId = req.params.mealId
-    const userId = req.userId
+    const mealId = req.params.mealId;
+    const userId = req.userId;
 
-    logger.trace('Deleting meal id' + mealId + 'by user' + userId)
-    let sqlStatement = 'DELETE FROM `meal` WHERE id=? AND cookId=? '
-
+    logger.trace("Deleting meal id", mealId, "by user", userId);
+    let sqlStatement = "DELETE FROM `meal` WHERE id=? AND cookId=? ";
 
     pool.getConnection(function (err, conn) {
-      // Do something with the connection
       if (err) {
         logger.error(err.code, err.syscall, err.address, err.port);
         next({
           code: 500,
-          message: err.code
+          message: err.code,
         });
       }
       if (conn) {
-        conn.query(sqlStatement, [mealId, userId], function (err, results, fields) {
+        // Check if the meal exists
+        const checkMealSql = "SELECT * FROM `meal` WHERE `id` = ?";
+        conn.query(checkMealSql, [mealId], function (err, mealResults) {
           if (err) {
-            logger.err(err.message);
+            logger.error(err.message);
             next({
               code: 409,
-              message: err.message
+              message: err.message,
             });
           }
-          if (results && results.affectedRows === 1) {
-            logger.trace('results: ', results);
-            res.status(200).json({
-              code: 200,
-              message: 'Meal deleted with id ' + mealId,
-              data: {}
-            })
+          if (mealResults && mealResults.length === 0) {
+            logger.info("Meal not found with id:", mealId);
+            res.status(404).json({
+              statusCode: 404,
+              message: "Meal not found",
+              data: {},
+            });
+          } else if (mealResults[0].cookId !== userId) {
+            logger.info("You are not the owner of this data!");
+            res.status(403).json({
+              statusCode: 403,
+              message: "Not authorized",
+              data: {},
+            });
           } else {
-            next({
-              code: 401,
-              message: 'Not authorized',
-              data: {}
-            })
+            conn.query(
+              sqlStatement,
+              [mealId, userId],
+              function (err, results, fields) {
+                if (err) {
+                  logger.err(err.message);
+                  next({
+                    code: 409,
+                    message: err.message,
+                  });
+                }
+                if (results && results.affectedRows === 1) {
+                  logger.trace("results:", results);
+                  res.status(200).json({
+                    code: 200,
+                    message: "Meal deleted with id " + mealId,
+                    data: {},
+                  });
+                } else {
+                  next({
+                    code: 401,
+                    message: "Not authorized",
+                    data: {},
+                  });
+                }
+              }
+            );
           }
         });
         pool.releaseConnection(conn);

@@ -158,34 +158,89 @@ const userController = {
     //UC-202
     getAllUsers: (req, res, next) => {
         logger.info('Get all users');
+    
+        let sqlStatement = "SELECT * FROM `user`";
+        let filters = [];
+    
+        if (req.query.isActive) {
+            // Check if the user fills in true or false, make it 1 or 0
+            if (req.query.isActive === "true") {
+                req.query.isActive = 1;
+            } else if (req.query.isActive === "false") {
+                req.query.isActive = 0;
+            }
+            filters.push(`isActive = ${req.query.isActive}`);
+        }
+    
+        // Check if roles filter is provided
+        if (req.query.roles) {
+            const roles = req.query.roles.split(",");
+            const rolesFilter = roles
+                .map((role) => `roles LIKE '%${role}%'`)
+                .join(" OR ");
+            filters.push(`(${rolesFilter})`);
+        }
+    
+        // Append filters to the SQL statement if any
+        if (filters.length > 0) {
+            sqlStatement += ` WHERE ${filters.join(" AND ")}`;
+        }
+    
         pool.getConnection(function (err, conn) {
             if (err) {
-                console.log('error')
-                next('error: ' + err.message)
+                logger.error(err);
+                next({
+                    code: 500,
+                    message: err.code,
+                });
+                return;
             }
-            if (conn) {
-                conn.query(
-                    'SELECT * FROM `user`',
-                    function (err, results) {
-                        if (err) {
-                            res.status(500).json({
-                                status: 500,
-                                message: err.sqlMessage,
-                                data: {}
-                            })
-                        }
-                        logger.info('results: ', results); // results contains rows returned by server
+            conn.query(
+                sqlStatement,
+                function (err, results, fields) {
+                    if (err) {
+                        logger.error(err.message);
+                        next({
+                            code: 409,
+                            message: err.message,
+                        });
+                        return;
+                    }
+                    logger.info("Found", results.length, "results");
+    
+                    // Check if no filters other than isActive or roles are provided
+                    if (
+                        Object.keys(req.query).filter(
+                            (key) => key !== "isActive" && key !== "roles"
+                        ).length === 0
+                    ) {
                         res.status(200).json({
                             status: 200,
-                            message: 'User getAll endpoint',
-                            data: results
-                        })
+                            message: "User getAll endpoint",
+                            data: results,
+                        });
+                    } else if (
+                        Object.keys(req.query).some(
+                            (key) => key !== "isActive" && key !== "roles"
+                        )
+                    ) {
+                        next({
+                            code: 200,
+                            message: "Invalid filter(s) used",
+                        });
+                    } else {
+                        res.status(200).json({
+                            status: 200,
+                            message: "User getAll endpoint",
+                            data: [],
+                        });
                     }
-                );
-                pool.releaseConnection(conn)
-            }
-        })
+                    conn.release();
+                }
+            );
+        });
     },
+    
 
     //UC-203
     getUserProfile: (req, res, next) => {
