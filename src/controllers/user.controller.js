@@ -158,10 +158,10 @@ const userController = {
     //UC-202
     getAllUsers: (req, res, next) => {
         logger.info('Get all users');
-    
+
         let sqlStatement = "SELECT * FROM `user`";
         let filters = [];
-    
+
         if (req.query.isActive) {
             // Check if the user fills in true or false, make it 1 or 0
             if (req.query.isActive === "true") {
@@ -171,7 +171,7 @@ const userController = {
             }
             filters.push(`isActive = ${req.query.isActive}`);
         }
-    
+
         // Check if roles filter is provided
         if (req.query.roles) {
             const roles = req.query.roles.split(",");
@@ -180,12 +180,12 @@ const userController = {
                 .join(" OR ");
             filters.push(`(${rolesFilter})`);
         }
-    
+
         // Append filters to the SQL statement if any
         if (filters.length > 0) {
             sqlStatement += ` WHERE ${filters.join(" AND ")}`;
         }
-    
+
         pool.getConnection(function (err, conn) {
             if (err) {
                 logger.error(err);
@@ -207,7 +207,7 @@ const userController = {
                         return;
                     }
                     logger.info("Found", results.length, "results");
-    
+
                     // Check if no filters other than isActive or roles are provided
                     if (
                         Object.keys(req.query).filter(
@@ -240,7 +240,7 @@ const userController = {
             );
         });
     },
-    
+
 
     //UC-203
     getUserProfile: (req, res, next) => {
@@ -283,6 +283,7 @@ const userController = {
     //UC-204
     getUser: (req, res, next) => {
         const loggedInUserId = req.userId; // Logged-in user ID
+        console.log('loggedInUserId:', loggedInUserId);
         const userId = parseInt(req.params.userId);
 
         pool.getConnection(function (err, conn) {
@@ -499,8 +500,9 @@ const userController = {
 
     //UC-206
     deleteUser: (req, res, next) => {
-        const loggedInUserId = req.userId; // Logged-in user ID
-        const userId = parseInt(req.params.userId);
+        const userId = req.userId
+        const id = parseInt(req.params.userId);
+        logger.info(`Logged in user: ${userId}, Deleted user ${id}`)
 
         pool.getConnection(function (err, conn) {
             if (err) {
@@ -508,85 +510,89 @@ const userController = {
                 next('error: ' + err.message);
                 return;
             }
-            if (conn) {
-                // Check if the user to be deleted exists
-                conn.query(
-                    'SELECT * FROM `user` WHERE `id` = ?',
-                    [userId],
-                    function (err, results) {
-                        if (err) {
-                            console.log('error selecting user:', err);
-                            res.status(500).json({
-                                status: 500,
-                                message: err.sqlMessage,
-                                data: {}
-                            });
-                            return;
-                        }
 
-                        if (results.length === 0) {
-                            res.status(404).json({
-                                status: 404,
-                                message: 'User not found',
-                                data: {}
-                            });
-                            return;
-                        }
-
-                        // Check if the logged-in user is trying to delete their own profile
-                        if (loggedInUserId !== userId) {
-                            res.status(403).json({
-                                status: 403,
-                                message: 'Access denied. You can only delete your own profile.',
-                                data: {},
-                            });
-                            return;
-                        }
-
-                        // Delete associated meals first
-                        conn.query(
-                            'DELETE FROM `meal` WHERE `cookId` = ?',
-                            [userId],
-                            function (err, results) {
-                                if (err) {
-                                    console.log('error deleting meals:', err);
-                                    res.status(500).json({
-                                        status: 500,
-                                        message: err.sqlMessage,
-                                        data: {}
-                                    });
-                                    return;
-                                }
-
-                                // Proceed with deleting the user
-                                conn.query(
-                                    'DELETE FROM `user` WHERE `id` = ?',
-                                    [userId],
-                                    function (err, results) {
-                                        if (err) {
-                                            console.log('error deleting user:', err);
-                                            res.status(500).json({
-                                                status: 500,
-                                                message: err.sqlMessage,
-                                                data: {}
-                                            });
-                                            return;
-                                        }
-                                        res.status(200).json({
-                                            status: 200,
-                                            message: 'User deleted with id ' + userId,
-                                            data: results
-                                        });
-                                    }
-                                );
-                            }
-                        );
+            // Check if the user to be deleted exists
+            conn.query(
+                'SELECT * FROM `user` WHERE `id` = ?',
+                [id],
+                function (err, results) {
+                    if (err) {
+                        console.log('error selecting user:', err);
+                        res.status(500).json({
+                            status: 500,
+                            message: err.sqlMessage,
+                            data: {}
+                        });
+                        conn.release();
+                        return;
                     }
-                );
-                pool.releaseConnection(conn);
-            }
+
+                    if (results.length === 0) {
+                        res.status(404).json({
+                            status: 404,
+                            message: 'User not found',
+                            data: {}
+                        });
+                        conn.release();
+                        return;
+                    }
+
+                    // Check if the logged-in user is trying to delete their own profile
+                    if (userId !== id) {
+                        res.status(403).json({
+                            status: 403,
+                            message: 'Access denied. You can only delete your own profile.',
+                            data: {},
+                        });
+                        return;
+                    }
+
+                    // Delete associated meals first
+                    conn.query(
+                        'DELETE FROM `meal` WHERE `cookId` = ?',
+                        [id],
+                        function (err, results) {
+                            if (err) {
+                                console.log('error deleting meals:', err);
+                                res.status(500).json({
+                                    status: 500,
+                                    message: err.sqlMessage,
+                                    data: {}
+                                });
+                                conn.release();
+                                return;
+                            }
+
+                            // Proceed with deleting the user
+                            conn.query(
+                                'DELETE FROM `user` WHERE `id` = ?',
+                                [id],
+                                function (err, results) {
+                                    if (err) {
+                                        console.log('error deleting user:', err);
+                                        res.status(500).json({
+                                            status: 500,
+                                            message: err.sqlMessage,
+                                            data: {}
+                                        });
+                                        conn.release();
+                                        return;
+                                    }
+                                    res.status(200).json({
+                                        status: 200,
+                                        message: 'User deleted with id ' + id,
+                                        data: results
+                                    });
+                                    conn.release();
+                                }
+                            );
+                        }
+                    );
+                }
+            );
         });
     },
+
 }
 
 module.exports = userController

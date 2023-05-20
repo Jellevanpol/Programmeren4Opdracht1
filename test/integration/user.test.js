@@ -93,8 +93,6 @@ describe('Get users', function () {
                 expect(status).to.equal(200)
                 expect(message).to.equal('User getAll endpoint')
                 expect(data).to.be.an('array')
-                // Add assertions to check if the users have isActive=true
-                // Example: expect(data[0].isActive).to.be.true
                 done()
             })
     })
@@ -115,7 +113,6 @@ describe('Get users', function () {
     })
 
     after((done) => {
-        // Clear the database after testing
         pool.query(CLEAR_DB, (err, result) => {
             assert(err === null);
             done();

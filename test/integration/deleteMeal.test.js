@@ -52,6 +52,7 @@ describe("UC-305 Verwijderen van maaltijd", () => {
                 assert(err === null)
                 expect(res.status).to.equal(401);
                 expect(res.body).to.have.property("message", "Invalid token!");
+                expect(res.body.data).to.be.an("object").that.is.empty
                 done();
             });
     });
@@ -81,7 +82,7 @@ describe("UC-305 Verwijderen van maaltijd", () => {
             .set("Authorization", "Bearer " + token)
             .end((err, res) => {
                 assert(err === null)
-                const { message, data} = res.body
+                const { message, data } = res.body
                 expect(res.status).to.equal(404)
                 expect(message).to.equal('Meal not found')
                 expect(data).to.be.an("object").that.is.empty
@@ -98,9 +99,11 @@ describe("UC-305 Verwijderen van maaltijd", () => {
             .set("Authorization", "Bearer " + token)
             .end((err, res) => {
                 assert(err === null)
-                const { message } = res.body
+                const { message, data } = res.body
                 expect(res.status).to.equal(200)
                 expect(message).to.contain('Meal deleted with id')
+                expect(data).to.be.an("object")
+
                 done()
             })
     })

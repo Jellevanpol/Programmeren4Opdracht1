@@ -146,18 +146,34 @@ describe("UC-302 Updaten van maaltijd", () => {
             })
     })
 
-    it('TC-305-4- Should delete meal', (done) => {
+    it('TC-302-5- Should update meal', (done) => {
         const token = jwt.sign({ userId: 1 }, jwtSecretKey);
         const mealId = 1
+
+        const requestBody = {
+            name: "meal",
+            price: "4.99",
+            maxAmountOfParticipants: 4,
+            isActive: 1,
+            isVega: 0,
+            isVegan: 0,
+            isToTakeHome: 1,
+            imageUrl: "example.jpg",
+            description: "Example description",
+            allergenes: "Example allergenes",
+        };
+
         chai
             .request(server)
-            .delete(`/api/meal/${mealId}`)
+            .put(`/api/meal/${mealId}`)
             .set("Authorization", "Bearer " + token)
+            .send(requestBody)
             .end((err, res) => {
                 assert(err === null)
                 const { message } = res.body
+                expect(message).to.contain('Meal updated with id: ')
                 expect(res.status).to.equal(200)
-                expect(message).to.contain('Meal deleted with id')
+                expect(res.body.data)
                 done()
             })
     })

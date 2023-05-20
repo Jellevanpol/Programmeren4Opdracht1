@@ -184,11 +184,10 @@ const mealController = {
             }
             if (results) {
               const mealId = results.insertId
-              logger.trace('Meal successfully added, id =', results.insertId);
-              results[0].insertId
+              logger.trace('Meal successfully added, id =', results[0].insertId);
               res.status(201).json({
                 code: 201,
-                message: "meal created with id",
+                message: "meal created with id " + results[0].insertId,
                 data: { mealId, ...meal }
               })
             }
@@ -280,7 +279,7 @@ const mealController = {
               logger.info("Found", results.length, "results");
               res.status(200).json({
                 statusCode: 200,
-                message: "Meal with id: " + mealId + " updated",
+                message: "Meal updated with id: " + mealId,
                 data: meal,
               });
             } else {
@@ -295,7 +294,7 @@ const mealController = {
         );
         pool.releaseConnection(conn);
       }
-    }); 
+    });
   },
 
   deleteMeal: (req, res, next) => {

@@ -43,12 +43,11 @@ describe("UC 101 - inloggen", () => {
             .end((err, res) => {
                 assert(err === null);
                 const { body } = res;
-                let { data } = res.body
 
                 expect(res).to.have.status(400);
                 expect(body).to.be.an("object");
                 expect(body).to.have.property("error", "AssertionError [ERR_ASSERTION]: password must be a string.");
-                expect(res.body).to.have.property("datetime");
+                expect(body).to.have.property("datetime");
 
                 done();
             });
@@ -68,7 +67,7 @@ describe("UC 101 - inloggen", () => {
                 body.should.have.property("message").to.be.equal("Not authorized");
                 body.should.have.property("data");
                 const { data } = body;
-                data.should.be.an("object");
+                data.should.be.an("object").that.is.empty;
                 done();
             });
     });
