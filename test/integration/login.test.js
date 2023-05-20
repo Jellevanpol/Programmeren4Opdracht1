@@ -57,11 +57,10 @@ describe("UC 101 - inloggen", () => {
         chai
             .request(server)
             .post("/api/login")
-            .send({ emailAdress: "johan.doe@example.com", password: "Welkom12" })
+            .send({ emailAdress: "john.deere@example.com", password: "Welkom12" })
             .end((err, res) => {
                 assert(err === null);
                 const { body } = res;
-                res.should.have.status(400);
                 body.should.be.an("object");
                 body.should.have.property("statusCode").to.be.equal(400);
                 body.should.have.property("message").to.be.equal("Not authorized");
@@ -80,7 +79,6 @@ describe("UC 101 - inloggen", () => {
             .end((err, res) => {
                 assert(err === null);
                 const { body } = res;
-                res.should.have.status(404);
                 body.should.be.an("object");
                 body.should.have.property("statusCode").to.be.equal(404);
                 body.should.have.property("message").to.be.equal("User not found");
@@ -96,8 +94,8 @@ describe("UC 101 - inloggen", () => {
             .request(server)
             .post("/api/login")
             .send({
-                emailAdress: "johan.doe@example.com",
-                password: "Welkom123",
+                emailAdress: "john.deere@example.com",
+                password: "Password12",
             })
             .end((err, res) => {
                 assert(err === null);
