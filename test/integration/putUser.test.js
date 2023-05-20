@@ -46,7 +46,7 @@ describe('Update user by ID', function () {
             emailAdress: '', // Empty email field
             password: 'password123',
             phoneNumber: '0612345678',
-            roles: 'user',
+            roles: 'guest',
             street: '123Straat',
             city: 'Breda'
         };
@@ -195,7 +195,7 @@ describe('Update user by ID', function () {
             emailAdress: 'john.deere@server.com',
             password: 'Password123',
             phoneNumber: '0612345678',
-            roles: 'user',
+            roles: 'guest',
             street: '123Straat',
             city: 'Breda'
         };
