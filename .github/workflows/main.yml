@@ -32,7 +32,7 @@ jobs:
 
       - name: Import database script
         run: |
-          mysql -uroot -p${{env.MYSQL_ROOT_PASSWORD}} ${{env.DB_DATABASE}} < share_a_meal.sql
+          mysql -uroot -p${{env.MYSQL_ROOT_PASSWORD}} ${{env.DB_DATABASE}} < share-a-meal.sql
           mysql -uroot -p${{env.MYSQL_ROOT_PASSWORD}} ${{env.DB_DATABASE}} -e "SHOW TABLES;"
 
       - name: npm install
@@ -41,20 +41,7 @@ jobs:
 
       - name: npm test
         run: |
-          npm test -- --DB_PASSWORD {{env.MYSQL_ROOT_PASSWORD}} --DB_USER root --DB_NAME ${{env.DB_DATABASE}}
-
-  #   Heroku-deploy:
-  #     needs: integrationtests
-  #     runs-on: ubuntu-latest
-  #     environment:
-  #       name: Heroku # naam van mijn environment op GitHub
-  #     steps:
-  #       - uses: actions/checkout@main
-  #       - uses: akhileshns/heroku-deploy@v3.12.12
-  #         with:
-  #           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-  #           heroku_app_name: shareameal-prog4
-  #           heroku_email: ${{secrets.HEROKU_USER_EMAIL}}
+          npm test -- --DB_PASSWORD ${{env.MYSQL_ROOT_PASSWORD}} --DB_USER root --DB_NAME ${{env.DB_DATABASE}}
 
   # Render-deploy:
   #   needs: integrationtests
@@ -70,3 +57,4 @@ jobs:
   #       env:
   #         RENDER_TOKEN: ${{ secrets.RENDER_TOKEN }}
   #         # Add any additional environment variables required for Render deployment
+
