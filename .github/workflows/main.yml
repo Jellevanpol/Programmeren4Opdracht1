@@ -43,18 +43,16 @@ jobs:
         run: |
           npm test -- --DB_PASSWORD ${{env.MYSQL_ROOT_PASSWORD}} --DB_USER root --DB_NAME ${{env.DB_DATABASE}}
 
-  # Render-deploy:
-  #   needs: integrationtests
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: Render # name of your environment on GitHub
-  #   steps:
-  #     - name: Install Render CLI
-  #       run: npm i -g @render/cli
+  Render-deploy:
+    needs: integrationtests
+    runs-on: ubuntu-latest
+    environment:
+      name: Render Programmeren4Opdracht1
+    steps:
+      - name: Install Render CLI
+        run: npm i -g @render/cli
 
-  #     - name: Deploy server to Render
-  #       run: render deploy --env <YOUR_ENVIRONMENT_ID> --build-command "<YOUR_BUILD_COMMAND>" --start-command "<YOUR_START_COMMAND>"
-  #       env:
-  #         RENDER_TOKEN: ${{ secrets.RENDER_TOKEN }}
-  #         # Add any additional environment variables required for Render deployment
-
+      - name: Deploy server to Render
+        run: render deploy --env ENV_id --build-command "src/$yarn" --start-command "src/$npm run dev"
+        env:
+          RENDER_TOKEN: ${{ secrets.RENDER_TOKEN }}
