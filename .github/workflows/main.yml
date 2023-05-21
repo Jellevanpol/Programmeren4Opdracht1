@@ -43,16 +43,37 @@ jobs:
         run: |
           npm test -- --DB_PASSWORD ${{env.MYSQL_ROOT_PASSWORD}} --DB_USER root --DB_NAME ${{env.DB_DATABASE}}
 
-  Render-deploy:
+  # Render-deploy:
+  #   needs: integrationtests
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: Render Programmeren4Opdracht1
+  #   steps:
+  #     - name: Install Render CLI
+  #       run: npm i render-cli -g 
+
+  #     - name: Deploy server to Render
+  #       run: render deploy --env environment_id --build-command "src/$yarn" --start-command "src/$npm run dev" --engine pug
+  #       env:
+  #         RENDER_TOKEN: ${{ secrets.RENDER_TOKEN }}
+
+  Railway-deploy:
     needs: integrationtests
     runs-on: ubuntu-latest
     environment:
-      name: Render Programmeren4Opdracht1
+      name: Railway 
     steps:
-      - name: Install Render CLI
-        run: npm i render-cli -g 
+      - name: Clone repository
+        uses: actions/checkout@master
 
-      - name: Deploy server to Render
-        run: render deploy --env environment_id --build-command "src/$yarn" --start-command "src/$npm run dev" --engine pug
+      - name: 'Current token'
+        run: |
+          echo "secrets.RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}"
+
+      - name: Install Railway
+        run: npm i -g @railway/cli
+
+      - name: Deploy server to Railway
+        run: railway up
         env:
-          RENDER_TOKEN: ${{ secrets.RENDER_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
