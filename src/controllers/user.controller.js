@@ -190,8 +190,8 @@ const userController = {
             if (err) {
                 logger.error(err);
                 next({
-                    code: 500,
-                    message: err.code,
+                    status: 500,
+                    message: err.status,
                 });
                 return;
             }
@@ -201,7 +201,7 @@ const userController = {
                     if (err) {
                         logger.error(err.message);
                         next({
-                            code: 409,
+                            status: 409,
                             message: err.message,
                         });
                         return;
@@ -225,7 +225,7 @@ const userController = {
                         )
                     ) {
                         next({
-                            code: 200,
+                            status: 200,
                             message: "Invalid filter(s) used",
                         });
                     } else {
@@ -250,10 +250,10 @@ const userController = {
         pool.getConnection(function (err, conn) {
             // Do something with the connection
             if (err) {
-                logger.error(err.code, err.syscall, err.address, err.port);
+                logger.error(err.status, err.syscall, err.address, err.port);
                 next({
-                    code: 500,
-                    message: err.code
+                    status: 500,
+                    message: err.status
                 });
             }
             if (conn) {
@@ -261,14 +261,14 @@ const userController = {
                     if (err) {
                         logger.error(err.message);
                         next({
-                            code: 409,
+                            status: 409,
                             message: err.message
                         });
                     }
                     if (results) {
                         logger.trace('Found', results.length, 'results');
                         res.status(200).json({
-                            code: 200,
+                            status: 200,
                             message: 'Get User profile',
                             data: results[0]
                         });

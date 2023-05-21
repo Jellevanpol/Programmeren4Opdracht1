@@ -13,10 +13,10 @@ const mealController = {
     pool.getConnection(function (err, conn) {
       // Do something with the connection
       if (err) {
-        logger.error(err.code, err.syscall, err.address, err.port);
+        logger.error(err.status, err.syscall, err.address, err.port);
         next({
-          code: 500,
-          message: err.code
+          status: 500,
+          message: err.status
         });
       }
       if (conn) {
@@ -24,14 +24,14 @@ const mealController = {
           if (err) {
             logger.err(err.message);
             next({
-              code: 409,
+              status: 409,
               message: err.message
             });
           }
           if (results) {
             logger.info('Found', results.length, 'results');
             res.status(200).json({
-              code: 200,
+              status: 200,
               message: 'Meal getAll endpoint',
               data: results
             });
@@ -50,10 +50,10 @@ const mealController = {
 
     pool.getConnection(function (err, conn) {
       if (err) {
-        logger.error(err.code, err.syscall, err.address, err.port);
+        logger.error(err.status, err.syscall, err.address, err.port);
         next({
-          code: 500,
-          message: err.code
+          status: 500,
+          message: err.status
         });
       }
       if (conn) {
@@ -61,19 +61,19 @@ const mealController = {
           if (err) {
             logger.error(err.message);
             next({
-              code: 409,
+              status: 409,
               message: err.message
             });
           } else if (results.length === 0) {
             logger.info('Meal not found');
             next({
-              code: 404,
+              status: 404,
               message: 'Meal not found'
             });
           } else {
             logger.info('Found', results.length, 'results');
             res.status(200).json({
-              code: 200,
+              status: 200,
               message: 'Meal get by id endpoint',
               data: results
             });
@@ -93,10 +93,10 @@ const mealController = {
     pool.getConnection(function (err, conn) {
       // Do something with the connection
       if (err) {
-        logger.error(err.code, err.syscall, err.address, err.port);
+        logger.error(err.status, err.syscall, err.address, err.port);
         next({
-          code: 500,
-          message: err.code
+          status: 500,
+          message: err.status
         });
       }
       if (conn) {
@@ -104,14 +104,14 @@ const mealController = {
           if (err) {
             logger.error(err.message);
             next({
-              code: 409,
+              status: 409,
               message: err.message
             });
           }
           if (results) {
             logger.trace('Found', results.length, 'results');
             res.status(200).json({
-              code: 200,
+              status: 200,
               message: 'Get meal profile',
               data: results[0]
             });
@@ -147,7 +147,7 @@ const mealController = {
       logger.warn(err.message.toString());
       // Als één van de asserts failt sturen we een error response.
       next({
-        code: 400,
+        status: 400,
         message: err.message.toString(),
         data: undefined
       });
@@ -167,10 +167,10 @@ const mealController = {
     pool.getConnection(function (err, conn) {
       // Do something with the connection
       if (err) {
-        logger.error(err.code, err.syscall, err.address, err.port);
+        logger.error(err.status, err.syscall, err.address, err.port);
         next({
-          code: 500,
-          message: err.code
+          status: 500,
+          message: err.status
         });
       }
       if (conn) {
@@ -180,7 +180,7 @@ const mealController = {
             if (err) {
               logger.error(err.message);
               next({
-                code: 409,
+                status: 409,
                 message: err.message
               });
             }
@@ -188,7 +188,7 @@ const mealController = {
               const mealId = results.insertId
               logger.trace('Meal successfully added, id =', results[0].insertId);
               res.status(201).json({
-                code: 201,
+                status: 201,
                 message: "meal created with id " + results[0].insertId,
                 data: { mealId, ...meal }
               })
@@ -232,7 +232,7 @@ const mealController = {
       logger.warn(err.message.toString());
       // If any of the assertions fail, send an error response.
       return res.status(400).json({
-        code: 400,
+        status: 400,
         message: "Invalid input for one or more fields",
         data: {},
       });
@@ -243,10 +243,10 @@ const mealController = {
 
     pool.getConnection(function (err, conn) {
       if (err) {
-        logger.error(err.code, err.syscall, err.address, err.port);
+        logger.error(err.status, err.syscall, err.address, err.port);
         return res.status(500).json({
-          code: 500,
-          message: err.code,
+          status: 500,
+          message: err.status,
         });
       }
       if (conn) {
@@ -270,7 +270,7 @@ const mealController = {
             if (err) {
               logger.error(err.message);
               return res.status(409).json({
-                code: 409,
+                status: 409,
                 message: err.message,
               });
             }
@@ -306,10 +306,10 @@ const mealController = {
 
     pool.getConnection(function (err, conn) {
       if (err) {
-        logger.error(err.code, err.syscall, err.address, err.port);
+        logger.error(err.status, err.syscall, err.address, err.port);
         next({
-          code: 500,
-          message: err.code,
+          status: 500,
+          message: err.status,
         });
       }
       if (conn) {
@@ -319,7 +319,7 @@ const mealController = {
           if (err) {
             logger.error(err.message);
             next({
-              code: 409,
+              status: 409,
               message: err.message,
             });
           }
@@ -345,20 +345,20 @@ const mealController = {
                 if (err) {
                   logger.err(err.message);
                   next({
-                    code: 409,
+                    status: 409,
                     message: err.message,
                   });
                 }
                 if (results && results.affectedRows === 1) {
                   logger.trace("results:", results);
                   res.status(200).json({
-                    code: 200,
+                    status: 200,
                     message: "Meal deleted with id " + mealId,
                     data: {},
                   });
                 } else {
                   next({
-                    code: 401,
+                    status: 401,
                     message: "Not authorized",
                     data: {},
                   });

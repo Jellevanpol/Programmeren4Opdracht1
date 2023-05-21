@@ -61,8 +61,8 @@ describe('UC-203 Get user profile', function () {
             .set("Authorization", "Bearer " + token)
             .end((err, res) => {
                 assert(err === null)
-                let { code, message, data } = res.body
-                expect(code).to.equal(200)
+                let { status, message, data } = res.body
+                expect(status).to.equal(200)
                 expect(message).to.equal('Get User profile')
                 expect(data).to.be.an('object')
                 expect(data).to.have.property('id')

@@ -108,7 +108,7 @@ describe("UC 101 - Inloggen", () => {
 
                 expect(res).to.have.status(200);
                 expect(res.body).to.be.an("object");
-                expect(res.body).to.have.property("code").to.be.equal(200);
+                expect(res.body).to.have.property("status").to.be.equal(200);
                 expect(res.body).to.have.property("message").to.be.equal("Login endpoint");
                 expect(res.body).to.have.property("data");
                 const { data } = res.body;
