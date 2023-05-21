@@ -16,10 +16,10 @@ describe('UC 102 Server-info', function () {
                 assert(err === null)
                 expect(res.body).to.be.an('object')
                 let { data, message, status } = res.body
-                expect(status).to.equal(201)
+                expect(status).to.equal(200)
                 expect(message).to.be.a('string').that.is.equal('Server info-endpoint')
                 expect(data).to.be.an('object')
-                expect(data).to.have.property('studentName').to.be.equal('Jelle')
+                expect(data).to.have.property('studentName').to.be.equal('Jelle van Pol')
                 expect(data).to.have.property('studentNumber').to.be.equal(2203205)
                 expect(data).to.have.property('description').to.be.equal('Welkom bij de server API van de share-a-meal')
                 done()

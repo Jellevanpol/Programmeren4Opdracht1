@@ -18,11 +18,11 @@ app.use('*', (req, res, next) => {
 //Api info
 app.get('/api/info', (req, res) => {
     logger.info('Get server information');
-    res.status(201).json({
-        status: 201,
+    res.status(200).json({
+        status: 200,
         message: 'Server info-endpoint',
         data: {
-            studentName: 'Jelle',
+            studentName: 'Jelle van Pol',
             studentNumber: 2203205,
             description: 'Welkom bij de server API van de share-a-meal'
         },
