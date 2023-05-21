@@ -55,4 +55,5 @@ jobs:
       - name: Deploy server to Render
         run: render deploy --env ENV_id --build-command "src/$yarn" --start-command "src/$npm run dev" --engine pug
         env:
+          NODE_ENV: development
           RENDER_TOKEN: ${{ secrets.RENDER_TOKEN }}
