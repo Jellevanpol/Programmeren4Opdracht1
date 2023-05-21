@@ -43,20 +43,6 @@ jobs:
         run: |
           npm test -- --DB_PASSWORD ${{env.MYSQL_ROOT_PASSWORD}} --DB_USER root --DB_NAME ${{env.DB_DATABASE}}
 
-  # Render-deploy:
-  #   needs: integrationtests
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: Render Programmeren4Opdracht1
-  #   steps:
-  #     - name: Install Render CLI
-  #       run: npm i render-cli -g 
-
-  #     - name: Deploy server to Render
-  #       run: render deploy --env environment_id --build-command "src/$yarn" --start-command "src/$npm run dev" --engine pug
-  #       env:
-  #         RENDER_TOKEN: ${{ secrets.RENDER_TOKEN }}
-
   Railway-deploy:
     needs: integrationtests
     runs-on: ubuntu-latest

@@ -25,7 +25,7 @@ const INSERT_USER =
     "VALUES (6, 'John', 'deere', 1, 'john.deere@example.com', 'Password12', 0634567890, 'admin', 'dorpsstraat', 'Breda'), (7, 'john', 'doe', 1, 'john.doe@example.com', 'Password12', 0612345678, 'guest', 'Straat 12', 'Nur Sultan')";
 
 
-describe('Delete user by ID', function () {
+describe('UC-206 Delete user by ID', function () {
     before((done) => {
         // Clear the database and insert a user for testing
         pool.query(CLEAR_DB, (err, result) => {
@@ -69,7 +69,7 @@ describe('Delete user by ID', function () {
                 assert(err === null);
                 const { body } = res;
                 res.should.have.status(401);
-                body.should.have.property("statusCode").to.be.equal(401);
+                body.should.have.property("status").to.be.equal(401);
                 body.should.have.property("message").to.be.equal("Invalid token!");
                 body.should.have.property("data");
                 const { data } = body;
@@ -78,7 +78,7 @@ describe('Delete user by ID', function () {
             });
     });
 
-    it("TC-206-3- Should return an error if the user trying to be deleted is not the same as the logged-in user", (done) => {
+    it("TC-206-3- Should return an error if the user is not authorized to delete the given user", (done) => {
         const token = jwt.sign({ userId: 6 }, jwtSecretKey);
         const otherUserId = 7
 

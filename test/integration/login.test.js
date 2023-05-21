@@ -23,7 +23,7 @@ const CLEAR_DB =
     "INSERT INTO user (id, firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city)" +
     "VALUES (6, 'John', 'deere', 1, 'john.deere@example.com', 'Password12', 0634567890, 'admin', 'dorpsstraat', 'Breda'), (7, 'john', 'doe', 1, 'john.doe@example.com', 'Password12', 0612345678, 'guest', 'Straat 12', 'Nur Sultan')";
 
-describe("UC 101 - inloggen", () => {
+describe("UC 101 - Inloggen", () => {
     before((done) => {
         // Clear the database and insert a user for testing
         pool.query(CLEAR_DB, (err, result) => {
@@ -53,7 +53,7 @@ describe("UC 101 - inloggen", () => {
             });
     });
 
-    it("TC-101-2 - Verkeerd wachtwoord", (done) => {
+    it("TC-101-2 - Niet valide wachtwoord", (done) => {
         chai
             .request(server)
             .post("/api/login")
@@ -62,7 +62,7 @@ describe("UC 101 - inloggen", () => {
                 assert(err === null);
                 const { body } = res;
                 body.should.be.an("object");
-                body.should.have.property("statusCode").to.be.equal(400);
+                body.should.have.property("status").to.be.equal(400);
                 body.should.have.property("message").to.be.equal("Not authorized");
                 body.should.have.property("data");
                 const { data } = body;
@@ -71,7 +71,7 @@ describe("UC 101 - inloggen", () => {
             });
     });
 
-    it("TC-101-3 - gebruiker bestaat niet", (done) => {
+    it("TC-101-3 - Gebruiker bestaat niet", (done) => {
         chai
             .request(server)
             .post("/api/login")
@@ -80,7 +80,7 @@ describe("UC 101 - inloggen", () => {
                 assert(err === null);
                 const { body } = res;
                 body.should.be.an("object");
-                body.should.have.property("statusCode").to.be.equal(404);
+                body.should.have.property("status").to.be.equal(404);
                 body.should.have.property("message").to.be.equal("User not found");
                 body.should.have.property("data");
                 const { data } = body;
@@ -89,7 +89,7 @@ describe("UC 101 - inloggen", () => {
             });
     });
 
-    it("TC-101-4 - gebruiker succesvol ingelogd", (done) => {
+    it("TC-101-4 - Gebruiker succesvol ingelogd", (done) => {
         chai
             .request(server)
             .post("/api/login")

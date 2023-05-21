@@ -1,1 +1,1 @@
-This is repository for a share a meal API
+This is a API for the share a meal project

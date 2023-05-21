@@ -73,7 +73,7 @@ describe("UC-305 Verwijderen van maaltijd", () => {
             })
     })
 
-    it('TC-305-3- Should return error on non-existant mealId', (done) => {
+    it('TC-305-3- Should return error on non-existant meal', (done) => {
         const token = jwt.sign({ userId: 1 }, jwtSecretKey);
         const mealId = 3
         chai

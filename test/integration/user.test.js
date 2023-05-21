@@ -23,7 +23,7 @@ const INSERT_USER =
     "INSERT INTO user (id, firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city)" +
     "VALUES (6, 'John', 'deere', 1, 'john.deere@example.com', 'Password12', 0634567890, 'admin', 'dorpsstraat', 'Breda'), (7, 'john', 'doe', 1, 'john.doe@example.com', 'Password12', 0612345678, 'guest', 'Straat 12', 'Nur Sultan')";
 
-describe('Get users', function () {
+describe('UC-202 Get all users', function () {
     before((done) => {
         // Clear the database and insert a user for testing
         pool.query(CLEAR_DB, (err, result) => {
@@ -57,8 +57,8 @@ describe('Get users', function () {
             .query({ nonExistingField: 'someValue' })
             .end((err, res) => {
                 assert(err === null)
-                let { statusCode, message, data } = res.body
-                expect(statusCode).to.equal(200)
+                let { status, message, data } = res.body
+                expect(status).to.equal(200)
                 expect(message).to.equal('Invalid filter(s) used')
                 expect(data).to.be.an('object')
                 done()

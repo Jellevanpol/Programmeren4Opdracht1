@@ -241,7 +241,6 @@ const userController = {
         });
     },
 
-
     //UC-203
     getUserProfile: (req, res, next) => {
         logger.trace('Get user profile for user', req.userId);
@@ -592,7 +591,6 @@ const userController = {
             );
         });
     },
-
 }
 
 module.exports = userController

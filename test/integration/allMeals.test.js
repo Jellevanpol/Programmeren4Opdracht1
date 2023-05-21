@@ -28,7 +28,7 @@ const INSERT_MEAL =
     "VALUES (1, 1, 1, 1, 1, '2023-05-19 12:00:00', 4, 4.99, 'https://example.com/image1.jpg', 1, '2023-05-19', '2023-05-19', 'Testmeal', 'Test description for meal 1', 'lactose'), (2, 0, 0, 0, 0, '2023-05-19 13:00:00', 6, 2.99, 'https://example.com/image2.jpg', 2, '2023-05-18', '2023-05-18', 'TestMeal2', 'Test description for meal 2', 'noten');";
 const INSERT = INSERT_USER + INSERT_MEAL;
 
-describe("UC-301 Ophalen van alle maaltijden", () => {
+describe("UC-303 Ophalen van alle maaltijden", () => {
     before((done) => {
         // Clear the database and insert a user for testing
         pool.query(CLEAR_DB, (err, result) => {

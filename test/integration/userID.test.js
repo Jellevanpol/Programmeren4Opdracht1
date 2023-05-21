@@ -25,7 +25,7 @@ const INSERT_USER =
 
 
 
-describe('Get user by ID', function () {
+describe('UC-204 Get user by ID', function () {
     before((done) => {
         // Clear the database and insert a user for testing
         pool.query(CLEAR_DB, (err, result) => {
@@ -45,8 +45,8 @@ describe('Get user by ID', function () {
             .set("Authorization", "Bearer " + token)
             .end((err, res) => {
                 assert(err === null)
-                let { statusCode, message, data } = res.body
-                expect(statusCode).to.equal(401)
+                let { status, message, data } = res.body
+                expect(status).to.equal(401)
                 expect(message).to.equal('Invalid token!')
                 expect(data).to.be.an('object').that.is.empty
                 done()

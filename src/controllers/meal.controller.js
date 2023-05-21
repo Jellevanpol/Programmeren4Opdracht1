@@ -3,6 +3,7 @@ const assert = require('assert');
 const pool = require('../utils/mysql-db');
 
 const mealController = {
+  //UC-303 Get all meals
   getAllMeals: (req, res, next) => {
     logger.info('Get all meals');
 
@@ -41,6 +42,7 @@ const mealController = {
     });
   },
 
+  //UC-304 Get meal by id
   getMeal: (req, res, next) => {
     logger.info('Get meal');
     const mealId = parseInt(req.params.mealId);
@@ -82,6 +84,7 @@ const mealController = {
     });
   },
 
+  //
   getMealProfile: (req, res, next) => {
     logger.trace('Get meal profile for meal', req.mealId);
 
@@ -275,14 +278,14 @@ const mealController = {
               logger.trace(results);
               logger.info("Found", results.length, "results");
               return res.status(200).json({
-                statusCode: 200,
+                status: 200,
                 message: "Meal updated with id: " + mealId,
                 data: meal,
               });
             } else {
               logger.info("Not authorized to update meal with id: " + mealId);
               res.status(403).json({ // Change the status code to 403
-                statusCode: 403,
+                status: 403,
                 message: "Not authorized",
                 data: {}
               });
@@ -323,14 +326,14 @@ const mealController = {
           if (mealResults && mealResults.length === 0) {
             logger.info("Meal not found with id:", mealId);
             res.status(404).json({
-              statusCode: 404,
+              status: 404,
               message: "Meal not found",
               data: {},
             });
           } else if (mealResults[0].cookId !== userId) {
             logger.info("You are not the owner of this data!");
             res.status(403).json({
-              statusCode: 403,
+              status: 403,
               message: "Not authorized",
               data: {},
             });

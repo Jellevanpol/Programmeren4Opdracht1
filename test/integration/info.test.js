@@ -7,8 +7,8 @@ chai.should()
 chai.use(chaihttp)
 const expect = chai.expect;
 
-describe('Server-info', function () {
-    it('TC-102- Server info should return succesful information', (done) => {
+describe('UC 102 Server-info', function () {
+    it('TC-102-1 Server info should return succesful information', (done) => {
         chai
             .request(server)
             .get('/api/info')
@@ -26,7 +26,7 @@ describe('Server-info', function () {
 
             });
     });
-    it('TC-103 Server should return valid error on non-existent endpoint', (done) => {
+    it('TC-102-2 Server should return valid error on non-existent endpoint', (done) => {
         chai
             .request(server)
             .get('/api/doesnotexist')

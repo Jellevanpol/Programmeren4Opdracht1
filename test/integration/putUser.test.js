@@ -25,7 +25,7 @@ const CLEAR_DB =
     "VALUES (6, 'John', 'deere', 1, 'john.deere@example.com', 'Password12', 0634567890, 'admin', 'dorpsstraat', 'Breda'), (7, 'john', 'doe', 1, 'john.doe@example.com', 'Password12', 0612345678, 'guest', 'Straat 12', 'Nur Sultan')";
 
 
-describe('Update user by ID', function () {
+describe('UC-205 Update user by ID', function () {
     before((done) => {
         // Clear the database and insert a user for testing
         pool.query(CLEAR_DB, (err, result) => {
@@ -43,7 +43,7 @@ describe('Update user by ID', function () {
             firstName: 'John',
             lastName: 'Doe',
             isActive: true,
-            emailAdress: '', // Empty email field
+            emailAdress: '',
             password: 'password123',
             phoneNumber: '0612345678',
             roles: 'guest',
@@ -72,7 +72,7 @@ describe('Update user by ID', function () {
             firstName: 'John',
             lastName: 'Doe',
             isActive: 1,
-            emailAdress: 'John@Deere.com', // Empty email field
+            emailAdress: 'John@Deere.com',
             password: 'Password123',
             phoneNumber: '0612345678',
             roles: 'user',
@@ -101,7 +101,7 @@ describe('Update user by ID', function () {
             firstName: 'John',
             lastName: 'Doe',
             isActive: true,
-            emailAdress: 'john@test.com', // Empty email field
+            emailAdress: 'john@test.com',
             password: 'Password123',
             phoneNumber: '',
             roles: 'user',
@@ -176,7 +176,7 @@ describe('Update user by ID', function () {
                 assert(err === null);
                 const { body } = res;
                 expect(res).to.have.status(401);
-                expect(body).to.have.property("statusCode").to.be.equal(401);
+                expect(body).to.have.property("status").to.be.equal(401);
                 expect(body).to.have.property("message").to.be.equal("Invalid token!");
                 expect(body).to.have.property("data");
                 const { data } = body;
