@@ -53,6 +53,6 @@ jobs:
         run: npm i render-cli -g 
 
       - name: Deploy server to Render
-        run: render deploy --env ENV_id --build-command "src/$yarn" --start-command "src/$npm run dev"
+        run: render deploy --env ENV_id --build-command "src/$yarn" --start-command "src/$npm run dev" --engine pug
         env:
           RENDER_TOKEN: ${{ secrets.RENDER_TOKEN }}
