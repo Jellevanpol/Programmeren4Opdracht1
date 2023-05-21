@@ -44,14 +44,13 @@ describe("UC 201 - create user", () => {
             .end((err, res) => {
                 assert(err === null)
                 expect(res).to.have.status(400);
-                expect(res.body.data).to.be.an('object');
-                expect(res.body.data).to.be.empty;
+                expect(res.body.data).to.be.an('object').that.is.empty;
                 expect(res.body.message).to.contain('is invalid!');
                 done();
             });
     });
 
-    it('TC-201-2- Server should return valid error on invalid email adress', (done) => {
+    it('TC-201-2- Server should return error on invalid email adress', (done) => {
         const invalidEmail = 'invalid-email';
         chai
             .request(server)
@@ -60,8 +59,7 @@ describe("UC 201 - create user", () => {
             .end((err, res) => {
                 assert(err === null)
                 expect(res).to.have.status(400);
-                expect(res.body.data).to.be.an('object');
-                expect(res.body.data).to.be.empty;
+                expect(res.body.data).to.be.an('object').that.is.empty;
                 expect(res.body.message).to.contain('is not a valid email');
                 done();
             });
@@ -136,7 +134,7 @@ describe("UC 201 - create user", () => {
                 expect(message).to.be.a('string').that.contains('User added with id ')
                 expect(data).to.be.an('object')
 
-                let { firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city } = data
+                const { firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city } = data
                 expect(data).to.have.property('id')
                 expect(firstName).to.equal('Jelle')
                 expect(lastName).to.equal('van Pol')

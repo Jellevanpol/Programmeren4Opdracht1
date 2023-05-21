@@ -19,7 +19,7 @@ const CLEAR_USERS_TABLE = "DELETE IGNORE FROM user;";
 const CLEAR_DB =
     CLEAR_MEAL_TABLE + CLEAR_PARTICIPANTS_TABLE + CLEAR_USERS_TABLE;
 
-    const INSERT_USER =
+const INSERT_USER =
     "INSERT INTO user (id, firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city)" +
     "VALUES (6, 'John', 'deere', 1, 'john.deere@example.com', 'Password12', 0634567890, 'admin', 'dorpsstraat', 'Breda'), (7, 'john', 'doe', 1, 'john.doe@example.com', 'Password12', 0612345678, 'guest', 'Straat 12', 'Nur Sultan')";
 
@@ -61,12 +61,15 @@ describe("UC 101 - Inloggen", () => {
             .end((err, res) => {
                 assert(err === null);
                 const { body } = res;
-                body.should.be.an("object");
-                body.should.have.property("status").to.be.equal(400);
-                body.should.have.property("message").to.be.equal("Not authorized");
-                body.should.have.property("data");
+
+                expect(res).to.have.status(400);
+                expect(body).to.be.an("object");
+                expect(body).to.have.property("status").to.be.equal(400);
+                expect(body).to.have.property("message").to.be.equal("Not authorized");
+                expect(body).to.have.property("data");
                 const { data } = body;
-                data.should.be.an("object").that.is.empty;
+                expect(data).to.be.an("object").that.is.empty;
+
                 done();
             });
     });
@@ -79,12 +82,15 @@ describe("UC 101 - Inloggen", () => {
             .end((err, res) => {
                 assert(err === null);
                 const { body } = res;
-                body.should.be.an("object");
-                body.should.have.property("status").to.be.equal(404);
-                body.should.have.property("message").to.be.equal("User not found");
-                body.should.have.property("data");
+
+                expect(res).to.have.status(404);
+                expect(body).to.be.an("object");
+                expect(body).to.have.property("status").to.be.equal(404);
+                expect(body).to.have.property("message").to.be.equal("User not found");
+                expect(body).to.have.property("data");
                 const { data } = body;
-                data.should.be.an("object");
+                expect(data).to.be.an("object").that.is.empty;
+
                 done();
             });
     });
@@ -99,18 +105,25 @@ describe("UC 101 - Inloggen", () => {
             })
             .end((err, res) => {
                 assert(err === null);
-                res.should.have.status(200);
-                res.body.should.be.an("object");
-                res.body.should.have.property("code").to.be.equal(200);
-                res.body.should.have.property("message").to.be.equal("Login endpoint");
-                res.body.should.have.property("data");
+
+                expect(res).to.have.status(200);
+                expect(res.body).to.be.an("object");
+                expect(res.body).to.have.property("code").to.be.equal(200);
+                expect(res.body).to.have.property("message").to.be.equal("Login endpoint");
+                expect(res.body).to.have.property("data");
                 const { data } = res.body;
-                data.should.be.an("object");
-                data.should.have.property("token");
-                data.should.have.property("id");
-                data.should.have.property("firstName");
-                data.should.have.property("lastName");
-                data.should.have.property("emailAdress");
+                expect(data).to.be.an("object");
+                expect(data).to.have.property("token");
+                expect(data).to.have.property("id");
+                expect(data).to.have.property("firstName");
+                expect(data).to.have.property("lastName");
+                expect(data).to.have.property("emailAdress");
+                expect(data).to.have.property("phoneNumber");
+                expect(data).to.have.property("street");
+                expect(data).to.have.property("city");
+                expect(data).to.have.property("roles");
+                expect(data).to.have.property("isActive");
+
                 done();
             });
     });
